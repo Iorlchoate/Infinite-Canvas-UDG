@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>无限画布-UDG版 · 建筑设计工作台</title>
+<style>
+:root{
+  --bg:#ffffff;
+  --surface:#ffffff;
+  --surface-2:#f7f8f9;
+  --border:#e6e9ec;
+  --border-strong:#cbd3da;
+  --text:#202a33;
+  --text-2:#5c6873;
+  --text-3:#949fa8;
+  --accent:#33475a;
+  --accent-text:#ffffff;
+  --brand:#3b627d;
+  --brand-soft:#eef3f6;
+  --ok:#317458;
+  --shadow-sm:0 1px 2px rgba(24,40,54,.04);
+  --shadow-md:0 1px 2px rgba(24,40,54,.04),0 10px 28px rgba(24,40,54,.06);
+  --radius:8px;
+}
+html.theme-dark{
+  --bg:#15191d;--surface:#1c2126;--surface-2:#232930;
+  --border:#2e363d;--border-strong:#414c55;
+  --text:#eef1f3;--text-2:#a6b0b8;--text-3:#737f88;
+  --accent:#e8edf1;--accent-text:#1b2228;
+  --brand:#8fb4cf;--brand-soft:#233440;--ok:#69b993;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.25);--shadow-md:0 1px 2px rgba(0,0,0,.25),0 10px 28px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh;font-size:14px;line-height:1.6;
+}
+button,textarea,input{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.45}
+
+/* 顶栏 */
+.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;
+  border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:20}
+.brandline{display:flex;align-items:center;gap:10px;font-weight:650;font-size:14px}
+.brand-sep{width:1px;height:14px;background:var(--border-strong);margin:0 3px}
+.brand-sub{font-weight:400;color:var(--text-3);font-size:12px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.outline-btn{border:1px solid var(--border-strong);background:var(--surface);color:var(--text);
+  padding:6px 12px;border-radius:6px;font-size:12.5px;font-weight:550;transition:.15s;white-space:nowrap}
+.outline-btn:hover{background:var(--surface-2);border-color:var(--text-3)}
+.outline-btn span{margin-left:5px;color:var(--text-3)}
+.link-btn{border:0;background:transparent;color:var(--text-2);padding:6px 8px;border-radius:6px;font-size:12.5px;transition:.15s}
+.link-btn:hover{background:var(--surface-2);color:var(--text)}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 28px 28px}
+.hero{padding:46px 0 26px}
+.eyebrow{font-size:10.5px;letter-spacing:.16em;color:var(--text-3);margin-bottom:11px}
+h1{margin:0 0 8px;font-size:25px;line-height:1.4;font-weight:650;letter-spacing:-.02em}
+.hero p{margin:0;color:var(--text-2);font-size:13px}
+
+/* 四个工作流 */
+.wf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:720px){.wf-grid{grid-template-columns:1fr}}
+.wf-card{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);
+  padding:15px 17px;text-align:left;transition:.15s;min-height:102px;display:flex;flex-direction:column}
+.wf-card:hover{border-color:var(--border-strong);background:var(--surface-2)}
+.wf-card.active{border-color:var(--brand);background:var(--brand-soft);box-shadow:var(--shadow-sm)}
+.wf-no{font-size:10.5px;color:var(--text-3);letter-spacing:.12em;margin-bottom:5px}
+.wf-card.active .wf-no{color:var(--brand)}
+.wf-t{display:block;font-size:14px;font-weight:650;color:var(--text);margin-bottom:4px}
+.wf-d{display:block;font-size:11.5px;color:var(--text-2);line-height:1.55}
+.wf-io{display:block;margin-top:auto;padding-top:9px;font-size:11px;color:var(--text-3)}
+.wf-io i{font-style:normal;margin:0 5px;color:var(--border-strong)}
+
+/* 详情 */
+.detail{margin-top:26px;animation:fadeUp .25s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.detail-head h2{margin:0 0 3px;font-size:16px;font-weight:650}
+.detail-head p{margin:0;font-size:12px;color:var(--text-2)}
+.detail-actions{display:flex;gap:14px;align-items:center}
+.text-btn{border:0;background:transparent;color:var(--text-3);font-size:11.5px;padding:4px 0;transition:.15s}
+.text-btn:hover{color:var(--brand)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.detail-label{font-size:10.5px;letter-spacing:.09em;color:var(--text-3);font-weight:650}
+.flow-card{padding:14px 16px 12px;margin-bottom:12px}
+.graph-wrap{margin-top:10px;overflow-x:auto;background:radial-gradient(circle at 1px 1px,var(--border) 1px,transparent 0);background-size:18px 18px;border-radius:6px}
+#graph{display:block;min-width:100%}
+.flow-tip{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-2);line-height:1.7}
+.flow-tip b{font-weight:650;color:var(--text)}
+
+.prompt-card{padding:14px 16px 13px}
+.prompt-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:9px}
+.prompt-count{font-size:10.5px;color:var(--text-3)}
+#prompt{width:100%;min-height:236px;resize:vertical;border:1px solid var(--border);background:var(--surface-2);
+  border-radius:6px;padding:12px 13px;font-size:12.5px;line-height:1.85;outline:none}
+#prompt:focus{border-color:var(--brand)}
+.prompt-foot{margin-top:8px;font-size:11px;color:var(--text-3);display:flex;gap:8px;flex-wrap:wrap}
+
+/* 生成条 */
+.composer{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+#extra{flex:1;min-width:220px;border:1px solid var(--border-strong);background:var(--surface);
+  border-radius:6px;padding:9px 12px;font-size:12.5px;outline:none}
+#extra:focus{border-color:var(--brand)}
+#extra::placeholder{color:var(--text-3)}
+.primary-btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-text);
+  border-radius:6px;padding:9px 18px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;
+  transition:.15s;white-space:nowrap}
+.primary-btn:hover:not(:disabled){background:var(--brand);border-color:var(--brand)}
+.primary-btn .arrow{font-size:14px;line-height:1;opacity:.8}
+.hint{margin-top:10px;font-size:11.5px;color:var(--text-3);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.hint .conn{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.conn i{width:5px;height:5px;border-radius:50%;background:var(--text-3);display:block}
+.conn.online i{background:var(--ok)}
+.conn.online{color:var(--ok)}
+
+.notice{margin-top:14px;padding:9px 13px;border-radius:6px;font-size:11.5px;
+  background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);display:none}
+.notice.show{display:block}
+.footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--border);
+  font-size:11px;color:var(--text-3);display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.spinner{width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;
+  border-radius:50%;display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);
+  background:var(--accent);color:var(--accent-text);padding:9px 16px;border-radius:6px;
+  font-size:12.5px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:.2s;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brandline">
+    <span>无限画布-UDG版</span>
+    <span class="brand-sep"></span>
+    <span class="brand-sub">建筑设计工作台</span>
+  </div>
+  <div class="topbar-right">
+    <button class="outline-btn" id="btn-canvas" title="直接进入画布，不经过生成流程">打开画布<span>↗</span></button>
+    <button class="link-btn" id="btn-settings">模型设置</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">底图 + 参考图 → 成图 / 建筑设计</div>
+    <h1>上传底图与参考图，一键生成建筑表现</h1>
+    <p>四个固定工作流 · 结构严格保持 · 风格由参考图控制 · 结果直接写入画布</p>
+  </section>
+
+  <div class="wf-grid" id="wf-grid"></div>
+
+  <section class="detail" id="detail">
+    <div class="detail-head">
+      <div>
+        <h2 id="d-title">—</h2>
+        <p id="d-desc">—</p>
+      </div>
+      <div class="detail-actions">
+        <button class="text-btn" id="btn-copy">复制提示词</button>
+        <button class="text-btn" id="btn-reset">还原默认</button>
+      </div>
+    </div>
+
+    <div class="card flow-card">
+      <div class="detail-label">节点流程 · 打开画布后拖入图片即可运行</div>
+      <div class="graph-wrap"><svg id="graph" height="0"></svg></div>
+      <div class="flow-tip"><b>① 底图</b> 与 <b>② 参考图</b> 是空白图片节点，拖入或双击上传；<b>提示词</b> 已写好并可在下方修改；运行 <b>API 出图</b> 节点即生成，结果汇入 <b>成果</b>。</div>
+    </div>
+
+    <div class="card prompt-card">
+      <div class="prompt-top">
+        <span class="detail-label">提示词 · 可编辑</span>
+        <span class="prompt-count" id="prompt-count"></span>
+      </div>
+      <textarea id="prompt" spellcheck="false"></textarea>
+      <div class="prompt-foot">
+        <span>第一张图 = 结构底图，第二张图 = 风格参考，连线顺序已固定</span>
+      </div>
+    </div>
+
+    <div class="composer">
+      <input id="extra" placeholder="可选补充：项目类型、风格、光线时段、材质，例如：社区文化中心，清水混凝土与暖木，黄昏光">
+      <button class="primary-btn" id="btn-go"><span>生成画布</span><span class="arrow">→</span></button>
+    </div>
+    <div class="hint">
+      <span class="conn" id="conn"><i></i><span>检测中…</span></span>
+      <span id="model-note">正在读取模型配置…</span>
+    </div>
+  </section>
+
+  <div class="notice" id="notice"></div>
+
+  <div class="footer">
+    <span>本地部署 · 素材不出内网</span>
+    <span>底图形体不被改变，参考图只控制风格</span>
+    <button class="text-btn" id="btn-list">画布列表</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="js/brief-workbench.js"></script>
+</body>
+</html>

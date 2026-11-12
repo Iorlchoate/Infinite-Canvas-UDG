@@ -5804,7 +5804,12 @@ function renderNode(node){
         else openGeneratorNodeMenu(node.id, e.clientX, e.clientY);
     };
     const title = node.type === 'image' ? 'Image' : node.type === 'prompt' ? 'Prompt' : node.type === 'loop' ? tr('canvas.loopNode') : node.type === 'promptGroup' ? 'Prompts' : node.type === 'group' ? 'Group' : node.type === 'output' ? 'Output' : node.type === 'llm' ? 'LLM' : node.type === 'midjourney' ? 'Midjourney' : node.type === 'msgen' ? tr('canvas.modelscopeGenerate') : tr('canvas.apiGenerate');
-    const displayTitle = node.type === 'image' && node.url ? nodeTitleForMedia(node) : title;
+    // 空白图片节点若带自定义名称（如工作台写入的「① 底图 / ② 参考图」），用它作占位标题，
+    // 便于区分多图输入的角色；未命名的默认空节点仍显示 Image，不影响既有画布。
+    const displayTitle = node.type === 'image'
+        ? (node.url ? nodeTitleForMedia(node)
+                    : (node.name && node.name !== '空白图片' ? node.name : title))
+        : title;
     // 失败徽章只在一键运行模式中显示，单节点失败已通过 alert 提示
     const showStatus = ['generator','midjourney','msgen','llm'].includes(node.type) && node.runStatus
         && (node.runStatus !== 'failed' || node._cascadeFailed);
