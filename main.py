@@ -163,10 +163,10 @@ class ConnectionManager:
 manager = ConnectionManager()
 GLOBAL_LOOP = None
 APP_VERSION = "2026.06.03"
-GITHUB_REPO_URL = "https://github.com/iorlchotae/Infinite-Canvas-UDG"
-GITHUB_VERSION_URL = "https://raw.githubusercontent.com/iorlchotae/Infinite-Canvas-UDG/main/VERSION"
-GITHUB_TREE_URL = "https://api.github.com/repos/iorlchotae/Infinite-Canvas-UDG/git/trees/main?recursive=1"
-GITHUB_RAW_ROOT = "https://raw.githubusercontent.com/iorlchotae/Infinite-Canvas-UDG/main"
+GITHUB_REPO_URL = "https://github.com/Iorlchoate/Infinite-Canvas-UDG"
+GITHUB_VERSION_URL = "https://raw.githubusercontent.com/Iorlchoate/Infinite-Canvas-UDG/main/VERSION"
+GITHUB_TREE_URL = "https://api.github.com/repos/Iorlchoate/Infinite-Canvas-UDG/git/trees/main?recursive=1"
+GITHUB_RAW_ROOT = "https://raw.githubusercontent.com/Iorlchoate/Infinite-Canvas-UDG/main"
 GITHUB_UPDATE_NOTES_URL = GITHUB_RAW_ROOT + "/static/update-notes.json"
 
 @app.on_event("startup")

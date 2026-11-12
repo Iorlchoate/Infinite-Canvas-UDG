@@ -1353,7 +1353,7 @@ async function downloadSelected(){
 
 els.test.addEventListener('click', () => testConnection().catch(err => setStatus(err.message || '连接失败')));
 els.github?.addEventListener('click', () => {
-  chrome.tabs.create({url: 'https://github.com/iorlchotae/Infinite-Canvas-UDG'});
+  chrome.tabs.create({url: 'https://github.com/Iorlchoate/Infinite-Canvas-UDG'});
 });
 els.pin.addEventListener('click', () => openSidePanel().catch(err => setStatus(err.message || '固定侧边栏失败')));
 els.settingsToggle.addEventListener('click', () => {

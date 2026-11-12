@@ -1544,8 +1544,8 @@
         const SIDEBAR_PINNED_KEY = 'studio_sidebar_pinned';
         const DEFAULT_PAGE_ID = 'brief';
         const PAGE_IDS = ['brief','online','canvas','asset-manager','api-settings'];
-        const PROJECT_URL = 'https://github.com/iorlchotae/Infinite-Canvas-UDG';
-        let appInfo = { version:'', repo_url:PROJECT_URL, version_url:'https://raw.githubusercontent.com/iorlchotae/Infinite-Canvas-UDG/main/VERSION' };
+        const PROJECT_URL = 'https://github.com/Iorlchoate/Infinite-Canvas-UDG';
+        let appInfo = { version:'', repo_url:PROJECT_URL, version_url:'https://raw.githubusercontent.com/Iorlchoate/Infinite-Canvas-UDG/main/VERSION' };
         let updateConnectivityResult = null;
         let projectUpdateRunning = false;
         let projectUpdateAbort = null;  // 当前更新请求的 AbortController，便于用户中途取消
@@ -2078,8 +2078,8 @@
             const sources = appInfo.sources || {};
             const github = sources.github || {};
             return [
-                { name:'GitHub 更新列表', url:github.tree_url || appInfo.tree_url || 'https://api.github.com/repos/iorlchotae/Infinite-Canvas-UDG/git/trees/main?recursive=1', source:'github', required:true },
-                { name:'GitHub 版本文件', url:github.version_url || appInfo.version_url || 'https://raw.githubusercontent.com/iorlchotae/Infinite-Canvas-UDG/main/VERSION', source:'github', required:true },
+                { name:'GitHub 更新列表', url:github.tree_url || appInfo.tree_url || 'https://api.github.com/repos/Iorlchoate/Infinite-Canvas-UDG/git/trees/main?recursive=1', source:'github', required:true },
+                { name:'GitHub 版本文件', url:github.version_url || appInfo.version_url || 'https://raw.githubusercontent.com/Iorlchoate/Infinite-Canvas-UDG/main/VERSION', source:'github', required:true },
                 { name:'GitHub 主页', url:'https://github.com/', source:'github' },
                 { name:'Google 连通性', url:'https://www.google.com/generate_204', source:'reference' },
             ];

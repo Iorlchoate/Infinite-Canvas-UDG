@@ -2,7 +2,7 @@
 
 基于开源项目 [Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) 二次开发的本地 AI 创作画布工具。
 
-- 项目主页：<https://github.com/iorlchotae/Infinite-Canvas-UDG>
+- 项目主页：<https://github.com/Iorlchoate/Infinite-Canvas-UDG>
 - **下载安装**：见下方 [⬇️ 下载与安装](#️-下载与安装)（免安装绿色包，解压即用）
 
 ---
@@ -11,7 +11,7 @@
 
 **新用户请直接下载打包好的绿色包**，无需克隆仓库、无需安装 Python：
 
-1. 打开 [Releases 页面](https://github.com/iorlchotae/Infinite-Canvas-UDG/releases/latest)，下载最新的 `Infinite-Canvas-UDG-<版本>-win.zip`（约 50 MB）
+1. 打开 [Releases 页面](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest)，下载最新的 `Infinite-Canvas-UDG-<版本>-win.zip`（约 50 MB）
 2. **解压到任意目录**（建议路径不要带中文空格以外的特殊字符，例如 `D:\AI\Infinite-Canvas-UDG`）
 3. **双击 `start.bat`**，等待控制台自动打开浏览器（默认 <http://127.0.0.1:3000/>）
 4. 首次使用进入 **「API 设置」**，填入可用的 API Key 保存后即可生图
@@ -22,7 +22,7 @@
 <summary><b>没有 Release 包时的替代方式（克隆源码运行）</b></summary>
 
 ```bash
-git clone https://github.com/iorlchotae/Infinite-Canvas-UDG.git
+git clone https://github.com/Iorlchoate/Infinite-Canvas-UDG.git
 cd Infinite-Canvas-UDG
 start.bat          # Windows（自带 python/ 便携运行时，同样免安装）
 python3 main.py    # macOS / Linux（需先 pip3 install -r requirements.txt）
@@ -136,7 +136,7 @@ python tools/make_release_zip.py
 # 自动排除 .git、API/.env 密钥、素材与画布运行数据）
 ```
 
-把 zip 上传到 [Releases](https://github.com/iorlchotae/Infinite-Canvas-UDG/releases)（`gh release create <版本号> dist/*.zip`）即可供用户在 README 顶部入口下载；上传前用 `gh release view` 或网页检查附件名称与 README 中的说明一致。
+把 zip 上传到 [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases)（`gh release create <版本号> dist/*.zip`）即可供用户在 README 顶部入口下载；上传前用 `gh release view` 或网页检查附件名称与 README 中的说明一致。
 
 ## 开源与致谢
 
