@@ -8,11 +8,20 @@ __pycache__/
 # Runtime / user data (regenerated locally, not source)
 history.json
 data/canvases/
+data/conversations/
 data/media_previews/
 data/projects.json
 data/prompt_libraries.json
 data/api_providers.json
+data/asset_library.json
 data/recommended_providers_seed.json
+data/runninghub_workflows.json
+data/shared_folders.json
+data/storage_settings.json
+global_config.json
+logs/
+output/
+workflows/
 assets/
 
 # Packaged launcher (rebuild with tools/build_start_exe.py, 8MB binary)

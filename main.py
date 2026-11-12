@@ -162,7 +162,6 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 GLOBAL_LOOP = None
-APP_VERSION = "2026.06.03"
 GITHUB_REPO_URL = "https://github.com/Iorlchoate/Infinite-Canvas-UDG"
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/Iorlchoate/Infinite-Canvas-UDG/main/VERSION"
 GITHUB_TREE_URL = "https://api.github.com/repos/Iorlchoate/Infinite-Canvas-UDG/git/trees/main?recursive=1"
@@ -173,7 +172,6 @@ GITHUB_UPDATE_NOTES_URL = GITHUB_RAW_ROOT + "/static/update-notes.json"
 async def startup_event():
     global GLOBAL_LOOP
     GLOBAL_LOOP = asyncio.get_running_loop()
-    sync_static_html_versions()
     # 启动时整理资产库：给所有图片分组（含默认角色/场景）建好文件夹，并把根目录里的旧素材归整进去。
     try:
         await asyncio.to_thread(migrate_asset_library_into_dirs)
@@ -1621,7 +1619,41 @@ os.makedirs(WORKFLOW_DIR, exist_ok=True)
 os.makedirs(CONVERSATION_DIR, exist_ok=True)
 os.makedirs(CANVAS_DIR, exist_ok=True)
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+class VersionedStaticFiles(StaticFiles):
+    """静态文件挂载：HTML 在响应时注入缓存戳。
+
+    旧实现（sync_static_html_versions）会在启动时把 `?v=版本.文件mtime`
+    写回 static/*.html 源文件，导致每次改动资源后 Git 工作区被程序自己弄脏。
+    现在只在 HTTP 响应里改写，磁盘源文件保持干净；/  路由仍走
+    static_html_response()，两处行为一致。
+    """
+
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if (
+            isinstance(response, FileResponse)
+            and response.status_code == 200
+            and scope.get("method", "GET").upper() != "HEAD"
+            and str(path).lower().endswith(".html")
+        ):
+            try:
+                full_path = str(response.path)
+                html = await asyncio.to_thread(self._read_text, full_path)
+                return Response(
+                    versioned_static_html(html),
+                    media_type="text/html; charset=utf-8",
+                    headers={"Cache-Control": "no-cache"},
+                )
+            except Exception as exc:
+                print(f"静态页面缓存戳注入失败({path}): {exc}")
+        return response
+
+    @staticmethod
+    def _read_text(path: str) -> str:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+
+app.mount("/static", VersionedStaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/output", StaticFiles(directory=OUTPUT_DIR), name="output")
 app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
 
@@ -1751,35 +1783,6 @@ def versioned_static_html(html: str) -> str:
             pass
         return f"{match.group('prefix')}{url}?v={cache_version}"
     return pattern.sub(replace, html)
-
-def sync_static_html_versions():
-    version = current_app_version()
-    if not version:
-        return
-    safe_version = urllib.parse.quote(version, safe="._-")
-    try:
-        for name in os.listdir(STATIC_DIR):
-            # 跳过 macOS 在外置硬盘(ExFAT/NTFS)生成的 ._* Apple Double 元数据文件，
-            # 这些是二进制文件，按 UTF-8 读取会抛 UnicodeDecodeError。
-            if name.startswith("._"):
-                continue
-            if not name.lower().endswith(".html"):
-                continue
-            path = os.path.join(STATIC_DIR, name)
-            if not os.path.isfile(path):
-                continue
-            # 单文件容错：某个文件读写失败不应中断整批同步。
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    old = f.read()
-                new = versioned_static_html(re.sub(r'([?&]v=)[^"\'`\s<>)]*', rf'\g<1>{safe_version}', old))
-                if new != old:
-                    with open(path, "w", encoding="utf-8", newline="") as f:
-                        f.write(new)
-            except Exception as e:
-                print(f"同步静态页面版本号失败({name}): {e}")
-    except Exception as e:
-        print(f"同步静态页面版本号失败: {e}")
 
 def static_html_response(filename: str):
     path = os.path.join(STATIC_DIR, filename)
@@ -11806,7 +11809,12 @@ async def upload_image(files: List[UploadFile] = File(...)):
         for addr in COMFYUI_INSTANCES:
             try:
                 files_data = {'image': (file.filename, content, file.content_type)}
-                response = requests.post(f"http://{addr}/upload/image", files=files_data, timeout=5)
+                # requests 是同步库，直接在 async 路由里调用会阻塞整个事件循环
+                # （每个 ComfyUI 后端最长 5s），上传期间页面会整体卡住。
+                response = await asyncio.to_thread(
+                    requests.post, f"http://{addr}/upload/image",
+                    files=files_data, timeout=5,
+                )
                 if response.status_code == 200:
                     last_result = response.json()
                     success_count += 1
@@ -11916,8 +11924,11 @@ async def upload_comfyui_base64(payload: Base64UploadRequest):
     comfy_name = None
     for addr in COMFYUI_INSTANCES:
         try:
-            resp = requests.post(f"http://{addr}/upload/image",
-                                 files={'image': (filename, content, ct or 'image/png')}, timeout=10)
+            # 同上：同步 requests 放进线程，避免 10s 超时把事件循环卡死。
+            resp = await asyncio.to_thread(
+                requests.post, f"http://{addr}/upload/image",
+                files={'image': (filename, content, ct or 'image/png')}, timeout=10,
+            )
             if resp.status_code == 200:
                 comfy_name = resp.json().get("name", filename)
         except Exception as exc:

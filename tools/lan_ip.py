@@ -4,7 +4,6 @@
 """
 
 import socket
-import sys
 
 
 def lan_ip() -> str:
@@ -23,8 +22,4 @@ def lan_ip() -> str:
 
 
 if __name__ == "__main__":
-    ip = lan_ip()
-    if len(sys.argv) > 1 and sys.argv[1] == "--quiet":
-        print(ip)
-    else:
-        print(ip)
+    print(lan_ip())

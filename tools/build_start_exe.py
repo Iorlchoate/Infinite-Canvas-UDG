@@ -1,7 +1,9 @@
 """一键打包 START.exe（内嵌图标）。用法：
   python tools/build_start_exe.py [图标ico] [输出exe名]
 默认：图标 icons/final-start.ico（应用图标），输出 START.exe 到项目根目录。
-依赖 PyInstaller（装在隔离环境 iconbuild 里，不污染项目自带 python）。
+依赖 PyInstaller；如装在独立环境，请用环境变量指定：
+  set ICONBUILD_PYTHON=C:/path/to/python.exe
+  python tools/build_start_exe.py
 """
 import os
 import shutil
@@ -9,7 +11,8 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PY = r"C:/Users/iorlchoate/.workbuddy/binaries/python/envs/iconbuild/Scripts/python.exe"
+# PyInstaller 通常不装在项目自带 python 里；默认用当前解释器，可用 ICONBUILD_PYTHON 覆盖。
+PY = os.environ.get("ICONBUILD_PYTHON") or sys.executable
 BUILD = os.path.join(ROOT, ".build_pyi")
 
 
@@ -20,6 +23,12 @@ def main():
     icon = os.path.abspath(icon)
     if not os.path.isfile(icon):
         raise SystemExit("图标不存在: %s" % icon)
+    probe = subprocess.run([PY, "-c", "import PyInstaller"], capture_output=True)
+    if probe.returncode != 0:
+        raise SystemExit(
+            "指定解释器没有安装 PyInstaller: %s\n"
+            "请先 pip install pyinstaller，或用环境变量 ICONBUILD_PYTHON 指向已安装的环境。" % PY
+        )
 
     if os.path.isdir(BUILD):
         shutil.rmtree(BUILD, ignore_errors=True)

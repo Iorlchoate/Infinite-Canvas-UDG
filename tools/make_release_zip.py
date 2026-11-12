@@ -44,16 +44,18 @@ def tracked_files() -> list[str]:
     except (OSError, subprocess.CalledProcessError):
         print("git 不可用，改用目录遍历（可能多收运行数据）", file=sys.stderr)
 
-    skip_dirs = {".git", "__pycache__", ".build_pyi", "dist", "assets", "conversations"}
-    skip_top_files = {".env"}
+    # git 不可用时的兜底遍历：宁可少收，也不能把用户数据 / 密钥打进发布包。
+    # data/ 全部是运行时状态（含种子标记，程序会自动生成），整目录排除。
+    skip_dirs = {".git", "__pycache__", ".build_pyi", "dist", "assets", "data", "output", "logs"}
+    skip_files = {".env", "history.json", "API/.env"}
     result: list[str] = []
     for root, dirs, names in os.walk(BASE_DIR):
         dirs[:] = [d for d in dirs if d not in skip_dirs]
         rel_root = os.path.relpath(root, BASE_DIR).replace("\\", "/")
         for name in names:
-            if name in skip_top_files or name.endswith(".pyc"):
-                continue
             rel = name if rel_root == "." else f"{rel_root}/{name}"
+            if rel in skip_files or name == ".env" or name.endswith(".pyc"):
+                continue
             result.append(rel)
     return result
 

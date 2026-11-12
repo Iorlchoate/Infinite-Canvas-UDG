@@ -2844,8 +2844,7 @@ const RH_KNOWN_FIELD_OPTIONS = {
 };
 function updatePromptPlaceholder(){
     if(!promptInput) return;
-    const suggestion = rhDefaultPromptSuggestion();
-    promptInput.dataset.placeholder = suggestion || tr('smart.promptPlaceholder');
+    promptInput.dataset.placeholder = tr('smart.promptPlaceholder');
 }
 function tempShUploadedUrlFor(url, sourceSettings=settings){
     const source = String(url || '');
@@ -3063,74 +3062,6 @@ function bindDynamicParams(){
             } catch(e) {
                 toast((e.message || '操作失败').slice(0, 180));
             }
-        };
-    });
-    dynamicParams.querySelectorAll('[data-rh-bool]').forEach(btn => {
-        btn.onclick = event => {
-            event.preventDefault();
-            event.stopPropagation();
-            settings.rhParams = settings.rhParams || {};
-            const key = btn.dataset.rhBool;
-            const field = rhActiveFields().find(f => rhParamKey(f.nodeId, f.fieldName) === key);
-            const cur = settings.rhParams[key] || {};
-            const on = String(rhParamValue(field, null)).toLowerCase() === 'true';
-            settings.rhParams[key] = {...cur, value:String(!on)};
-            persistActiveSmartSettings();
-            renderDynamicParams();
-            scheduleSave();
-        };
-    });
-    dynamicParams.querySelectorAll('[data-rh-param]').forEach(input => {
-        input.onclick = event => event.stopPropagation();
-        input.oninput = input.onchange = event => {
-            event?.stopPropagation?.();
-            const key = input.dataset.rhParam;
-            settings.rhParams = settings.rhParams || {};
-            const cur = settings.rhParams[key] || {};
-            settings.rhParams[key] = {...cur, value:input.value};
-            const control = input.closest('.smart-control');
-            const valueText = control?.querySelector('.rh-slider-value');
-            const pillValue = control?.querySelector('.rh-slider-pill-value');
-            if(valueText) valueText.textContent = input.value;
-            if(pillValue) pillValue.textContent = input.value;
-            persistActiveSmartSettings();
-            scheduleSave();
-        };
-        if(input.dataset.rhType === 'slider'){
-            input.onpointerup = () => input.blur();
-            input.onmouseleave = () => {
-                if(!input.closest('.smart-control')?.matches(':hover')) input.blur();
-            };
-        }
-    });
-    dynamicParams.querySelectorAll('[data-rh-pick]').forEach(btn => {
-        btn.onclick = event => {
-            event.preventDefault();
-            event.stopPropagation();
-            const key = btn.dataset.rhPick;
-            const value = btn.dataset.rhValue;
-            settings.rhParams = settings.rhParams || {};
-            const cur = settings.rhParams[key] || {};
-            settings.rhParams[key] = {...cur, value};
-            const popover = btn.closest('.smart-popover');
-            const control = btn.closest('.smart-control');
-            const pillSub = control?.querySelector('.smart-pill .sub');
-            if(pillSub) pillSub.textContent = value;
-            if(popover){
-                popover.querySelectorAll('[data-rh-pick]').forEach(b => {
-                    if(b.dataset.rhPick === key) b.classList.toggle('active', b.dataset.rhValue === value);
-                });
-            }
-            closeAllSmartPopovers();
-            persistActiveSmartSettings();
-            scheduleSave();
-        };
-    });
-    dynamicParams.querySelectorAll('[data-rh-random]').forEach(btn => {
-        btn.onclick = event => {
-            event.preventDefault();
-            event.stopPropagation();
-            toggleSmartRhRandom(btn.dataset.rhRandom);
         };
     });
 }
@@ -10459,7 +10390,6 @@ function renderInputPromptPreview(node){
 function renderInputThumbsRow(node){
     if(!inputThumbsRow) return;
     syncJimengModelPillForRefs();
-    syncJimengVideoModelPillForRefs();
     const dedup = node ? visibleReferenceImagesFor(node) : [];
     const manualRefKeys = new Set(manualReferenceImagesFor(node).map(img => inputRefKey(img)));
     const addActive = mentionInsertMode === 'manual-ref';

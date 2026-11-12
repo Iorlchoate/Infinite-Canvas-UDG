@@ -16,9 +16,10 @@ python3 main.py
 
 ## 功能特点
 
-- **自动检测依赖**：首次运行会自动检查并安装所需依赖
-- **自动打开浏览器**：服务启动后 3 秒自动打开网页
+- **自动打开浏览器**：服务启动就绪后自动打开网页
+- **自动避开占用端口**：3000 被占用时自动顺延，以程序输出为准
 - **显示访问地址**：同时显示本地地址和局域网地址
+- **依赖需手动安装一次**：如提示缺依赖，先运行 `mac-安装依赖.sh`
 
 ## 系统要求
 
@@ -33,8 +34,10 @@ python3 main.py
 
 | 文件 | 说明 |
 |------|------|
-| `mac-启动服务.command` | 双击运行的启动器（自动修复权限、清理旧进程、启动服务） |
+| `mac-启动服务.command` | 双击运行的启动器（自动修复权限、启动服务） |
+| `mac-启动服务.sh` | 终端方式启动服务 |
 | `mac-修复权限.command` | 单独修复 macOS 安全限制 |
+| `mac-安装依赖.sh` | 安装 Python 依赖（优先离线 `packages/`） |
 | `main.py` | 服务主程序（直接 `python3 main.py` 即可启动） |
 
 ## 常见问题
@@ -55,16 +58,16 @@ https://www.python.org/downloads/
 
 ### 3. 依赖安装失败
 
-尝试手动安装依赖：
+尝试手动安装依赖（与 `requirements.txt` 一致）：
 ```bash
-pip3 install fastapi uvicorn httpx pillow requests pydantic python-dotenv websockets watchfiles
+pip3 install fastapi uvicorn httpx pillow requests pydantic python-multipart websockets
 ```
 
 ## 手动控制
 
 ### 安装依赖
 ```bash
-pip3 install fastapi uvicorn httpx pillow requests pydantic python-dotenv websockets watchfiles
+pip3 install fastapi uvicorn httpx pillow requests pydantic python-multipart websockets
 ```
 
 ### 启动服务

@@ -10254,18 +10254,6 @@ function createImageCardFromOutput(url, point){
     render();
     scheduleSave();
 }
-async function downloadUrl(url, filename){
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('下载失败');
-    const blob = await res.blob();
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-}
 function setOutputCompareMode(active){
     outputPreview.classList.toggle('compare-mode', active);
     if(active){

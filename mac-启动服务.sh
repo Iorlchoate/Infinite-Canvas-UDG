@@ -7,17 +7,15 @@ fi
 if [ -z "$LAN_IP" ]; then
   LAN_IP="127.0.0.1"
 fi
-APP_URL="http://${LAN_IP}:3000/"
 
 echo "Starting Infinite Canvas ..."
-echo "Visit: ${APP_URL}"
+echo "Visit: http://${LAN_IP}:3000/"
 echo "Local: http://127.0.0.1:3000/"
+echo "(3000 被占用时 main.py 会自动顺延端口，以程序实际输出为准)"
 echo "Press Ctrl+C to stop."
 echo ""
 
-# Open browser after 3 seconds
-sleep 3 && open "${APP_URL}" &
-
+# 浏览器由 main.py 在服务就绪后自动打开，这里不再延时开第二个。
 python3 main.py
 
 echo ""
