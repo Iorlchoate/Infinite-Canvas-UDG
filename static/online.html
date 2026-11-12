@@ -61,6 +61,28 @@
         .masonry-item { aspect-ratio:1/1; border-radius:24px; overflow:hidden; background:#fff; border:1px solid #f1f5f9; transition:all .5s var(--easing); }
         .masonry-item:hover { transform:translateY(-6px); box-shadow:0 20px 40px rgba(0,0,0,.08); }
         .gallery-lightbox { background:rgba(255,255,255,.99); backdrop-filter:blur(22px) saturate(1.05); }
+        /* 参考图：张数可自定义（1~9），每张槽位固定编号 IMAGE 0 ~ IMAGE 8 */
+        .ref-toolbar { display:flex; align-items:center; gap:8px; margin-left:auto; }
+        .ref-used { font-size:9px; font-weight:800; letter-spacing:.06em; color:#94a3b8; white-space:nowrap; }
+        .ref-count-select { height:26px; border:1px solid #edf2f7; border-radius:999px; background:#fff; color:#111827; font-size:10px; font-weight:800; padding:0 8px; outline:none; cursor:pointer; }
+        .ref-hint { font-size:10px; line-height:1.65; color:#94a3b8; margin-top:-2px; }
+        .ref-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .ref-slot { position:relative; aspect-ratio:1/1; border:1px dashed #e2e8f0; border-radius:16px; background:#fff; overflow:hidden; cursor:pointer; transition:all .3s var(--easing); display:flex; align-items:center; justify-content:center; }
+        .ref-slot:hover,.ref-slot.drag-over { border-color:#111827; transform:translateY(-2px); }
+        .ref-index { position:absolute; top:6px; left:6px; z-index:12; border:0; background:rgba(17,24,39,.84); color:#fff; font-size:9px; font-weight:800; letter-spacing:.06em; padding:3px 8px; border-radius:999px; cursor:pointer; user-select:none; transition:background .2s var(--easing); }
+        .ref-index:hover { background:#000; }
+        .ref-plus { width:20px; height:20px; color:#cbd5e1; }
+        .ref-empty-text { position:absolute; bottom:10px; left:0; right:0; text-align:center; font-size:9px; font-weight:700; color:#cbd5e1; letter-spacing:.06em; }
+        .ref-del { position:absolute; top:6px; right:6px; z-index:12; width:22px; height:22px; border:0; border-radius:999px; background:rgba(255,255,255,.95); color:#111827; font-size:14px; line-height:20px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.15); }
+        .ref-del:hover { background:#111827; color:#fff; }
+        .ref-thumb { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; animation:fadeIn .4s var(--easing); }
+        html.studio-theme-dark .ref-slot, body.studio-theme-dark .ref-slot { background:#1b2029; border-color:#39404d; }
+        html.studio-theme-dark .ref-slot:hover, body.studio-theme-dark .ref-slot:hover,
+        html.studio-theme-dark .ref-slot.drag-over, body.studio-theme-dark .ref-slot.drag-over { border-color:#e5e7eb; }
+        html.studio-theme-dark .ref-count-select, body.studio-theme-dark .ref-count-select { background:#1b2029; border-color:#39404d; color:#e5e7eb; }
+        html.studio-theme-dark .ref-hint, body.studio-theme-dark .ref-hint { color:#8b95a6; }
+        html.studio-theme-dark .ref-used, body.studio-theme-dark .ref-used { color:#8b95a6; }
+        html.studio-theme-dark .ref-empty-text, body.studio-theme-dark .ref-empty-text { color:#6b7585; }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     </style>
     <link rel="stylesheet" href="/static/css/theme.css?v=2026.10.25.8.1794396309">
@@ -98,24 +120,13 @@
                     <div class="flex items-center gap-2 text-gray-400">
                         <i data-lucide="images" class="w-3.5 h-3.5"></i>
                         <span class="text-[10px] font-black uppercase tracking-widest" data-i18n="online.referenceImages">Reference Images</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div id="drop-zone-1" onclick="document.getElementById('file1').click()" class="upload-item group aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer">
-                            <input type="file" id="file1" accept="image/*" class="hidden" onchange="handleFile(this.files[0],1)">
-                            <i data-lucide="plus" class="w-5 h-5 text-gray-300 group-hover:text-black"></i><span class="text-[9px] mt-2 font-bold text-gray-400 uppercase">Main</span>
-                            <img id="prev1" class="preview-img hidden"><button id="del1" onclick="clearSlot(1,event)" class="hidden absolute top-2 right-2 w-6 h-6 bg-white/90 rounded-full shadow-sm z-10">×</button>
-                        </div>
-                        <div id="drop-zone-2" onclick="document.getElementById('file2').click()" class="upload-item group aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer">
-                            <input type="file" id="file2" accept="image/*" class="hidden" onchange="handleFile(this.files[0],2)">
-                            <i data-lucide="plus" class="w-5 h-5 text-gray-300 group-hover:text-black"></i><span class="text-[9px] mt-2 font-bold text-gray-400 uppercase">Aux A</span>
-                            <img id="prev2" class="preview-img hidden"><button id="del2" onclick="clearSlot(2,event)" class="hidden absolute top-2 right-2 w-6 h-6 bg-white/90 rounded-full shadow-sm z-10">×</button>
-                        </div>
-                        <div id="drop-zone-3" onclick="document.getElementById('file3').click()" class="upload-item group aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer">
-                            <input type="file" id="file3" accept="image/*" class="hidden" onchange="handleFile(this.files[0],3)">
-                            <i data-lucide="plus" class="w-5 h-5 text-gray-300 group-hover:text-black"></i><span class="text-[9px] mt-2 font-bold text-gray-400 uppercase">Aux B</span>
-                            <img id="prev3" class="preview-img hidden"><button id="del3" onclick="clearSlot(3,event)" class="hidden absolute top-2 right-2 w-6 h-6 bg-white/90 rounded-full shadow-sm z-10">×</button>
+                        <div class="ref-toolbar">
+                            <span id="refUsedLabel" class="ref-used">0 / 3</span>
+                            <select id="refCountSelect" class="ref-count-select" onchange="setRefCount(this.value)" title="参考图张数" aria-label="参考图张数"></select>
                         </div>
                     </div>
+                    <p id="refHint" class="ref-hint">每张参考图都有固定编号（IMAGE 0 起）。点击编号可插入到 Prompt，写提示词时直接用 IMAGE n 指代对应图片。</p>
+                    <div id="refGrid" class="ref-grid"></div>
                 </section>
 
                 <div class="tool-panel">
@@ -236,11 +247,36 @@
     <script>
         lucide.createIcons();
         function tr(key){ return window.StudioI18n ? StudioI18n.t(key) : key; }
+        // 参考图相关文案放在页面内，避免 i18n 脚本的缓存版本戳挡住新词条
+        const REF_TEXT = {
+            count: {zh:'参考图张数', en:'Reference count'},
+            hint: {zh:'每张参考图都有固定编号（IMAGE 0 起）。点击编号可插入到 Prompt，写提示词时直接用 IMAGE n 指代对应图片。',
+                   en:'Each reference has a fixed IMAGE n label (starting at IMAGE 0). Click a label to insert it into the prompt.'},
+            empty: {zh:'点击 / 拖入', en:'Click / drop'},
+            insert: {zh:'插入到提示词', en:'Insert into prompt'},
+            trim: {zh:'减少张数会移除超出范围的参考图，是否继续？', en:'Reducing the count removes the extra reference images. Continue?'},
+            full: {zh:'参考图槽位已满，请先删除一张或增加张数（最高 9 张）。', en:'All reference slots are full. Remove one or increase the count (max 9).'},
+            uploadFailed: {zh:'参考图上传失败：', en:'Reference image upload failed: '}
+        };
+        function rt(key){
+            const en = window.StudioI18n && StudioI18n.lang() === 'en';
+            return (REF_TEXT[key] && REF_TEXT[key][en ? 'en' : 'zh']) || (REF_TEXT[key] && REF_TEXT[key].zh) || key;
+        }
+        function applyRefText(){
+            const hint = document.getElementById('refHint');
+            if(hint) hint.textContent = rt('hint');
+            const sel = document.getElementById('refCountSelect');
+            if(sel){ sel.title = rt('count'); sel.setAttribute('aria-label', rt('count')); }
+            document.querySelectorAll('.ref-empty-text').forEach(el => el.textContent = rt('empty'));
+            document.querySelectorAll('.ref-index').forEach(el => el.title = rt('insert'));
+        }
         function applyLanguage(lang){
             if(lang && window.StudioI18n) StudioI18n.set(lang);
             document.title = tr('online.title');
             const loader = document.getElementById('loadMoreTrigger');
             if(loader && !isLoading) loader.innerText = tr('online.loadMore');
+            renderRefCountOptions();
+            applyRefText();
         }
         window.addEventListener('message', event => {
             if(event.data?.type === 'studio-lang') applyLanguage(event.data.lang);
@@ -250,9 +286,15 @@
         window.addEventListener('studio-lang-change', () => {
             document.title = tr('online.title');
             updateAdaptivePanel();
+            renderRefCountOptions();
+            applyRefText();
         });
-        let refs = {1:null,2:null,3:null};
-        let refDims = {1:null,2:null,3:null};
+        // 参考图槽位：最多 9 张，下标即提示词里的 IMAGE 编号（IMAGE 0 ~ IMAGE 8）
+        const MAX_REF_SLOTS = 9;
+        const DEFAULT_REF_SLOTS = 3;
+        let refSlots = DEFAULT_REF_SLOTS;
+        let refs = Array(MAX_REF_SLOTS).fill(null);
+        let refDims = Array(MAX_REF_SLOTS).fill(null);
         let provider = 'comfly';
         let selectedModel = 'gpt-image-2';
         let apiProviders = [];
@@ -442,7 +484,7 @@
             });
         }
         function firstReferenceDimension(){
-            return [1,2,3].map(id => refDims[id]).find(dim => dim?.width && dim?.height) || null;
+            return refDims.slice(0, refSlots).find(dim => dim?.width && dim?.height) || null;
         }
 
         function setRatio(next, preferredSize = ''){
@@ -539,43 +581,169 @@
             return match[0];
         }
 
-        [1,2,3].forEach(id => {
-            const zone = document.getElementById(`drop-zone-${id}`);
-            zone.ondragover = e => { e.preventDefault(); zone.classList.add('drag-over'); };
-            zone.ondragleave = () => zone.classList.remove('drag-over');
-            zone.ondrop = e => { e.preventDefault(); zone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0], id); };
-        });
+        /* ---- 参考图槽位：张数 1~9 可自定义，编号固定为 IMAGE 0 ~ IMAGE 8 ---- */
+        function renderRefCountOptions(){
+            const sel = document.getElementById('refCountSelect');
+            if(!sel) return;
+            const en = window.StudioI18n && StudioI18n.lang() === 'en';
+            sel.innerHTML = Array.from({length:MAX_REF_SLOTS}, (_, i) =>
+                `<option value="${i+1}">${i+1} ${en ? 'images' : '张'}</option>`).join('');
+            sel.value = String(refSlots);
+        }
+        function updateRefMeta(){
+            const used = refs.slice(0, refSlots).filter(Boolean).length;
+            const label = document.getElementById('refUsedLabel');
+            if(label) label.textContent = `${used} / ${refSlots}`;
+            const sel = document.getElementById('refCountSelect');
+            if(sel) sel.value = String(refSlots);
+        }
+        function renderRefGrid(){
+            const grid = document.getElementById('refGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            for(let slot = 0; slot < refSlots; slot++){
+                const filled = !!refs[slot];
+                const zone = document.createElement('div');
+                zone.id = `drop-zone-${slot}`;
+                zone.className = 'ref-slot';
+                zone.dataset.slot = String(slot);
+                zone.innerHTML = `
+                    <button type="button" class="ref-index" title="${escapeHtml(rt('insert'))}" onclick="insertRefTag(${slot},event)">IMAGE ${slot}</button>
+                    <img id="prev${slot}" class="ref-thumb${filled ? '' : ' hidden'}"${filled ? ` src="${escapeHtml(refs[slot]?.url || '')}"` : ''} alt="IMAGE ${slot}">
+                    <i data-lucide="plus" class="ref-plus${filled ? ' hidden' : ''}"></i>
+                    <span class="ref-empty-text${filled ? ' hidden' : ''}">${escapeHtml(rt('empty'))}</span>
+                    <button id="del${slot}" type="button" class="ref-del${filled ? '' : ' hidden'}" title="移除" onclick="clearSlot(${slot},event)">×</button>
+                    <input type="file" id="file${slot}" accept="image/*" multiple class="hidden">`;
+                zone.onclick = e => {
+                    if(e.target.closest('.ref-index') || e.target.closest('.ref-del')) return;
+                    document.getElementById(`file${slot}`).click();
+                };
+                const input = zone.querySelector('input[type="file"]');
+                input.onchange = () => { handleFiles(input.files, slot); input.value = ''; };
+                zone.ondragover = e => { e.preventDefault(); zone.classList.add('drag-over'); };
+                zone.ondragleave = () => zone.classList.remove('drag-over');
+                zone.ondrop = e => {
+                    e.preventDefault(); e.stopPropagation();
+                    zone.classList.remove('drag-over');
+                    handleFiles(e.dataTransfer.files, slot);
+                };
+                grid.appendChild(zone);
+            }
+            lucide.createIcons();
+            updateRefMeta();
+            applyRefText();
+        }
+        function setRefCount(next){
+            const target = Math.max(1, Math.min(MAX_REF_SLOTS, parseInt(next, 10) || DEFAULT_REF_SLOTS));
+            if(target === refSlots) return;
+            if(target < refSlots && refs.slice(target).some(Boolean)){
+                if(!confirm(rt('trim'))){
+                    const sel = document.getElementById('refCountSelect');
+                    if(sel) sel.value = String(refSlots);
+                    return;
+                }
+            }
+            if(target < refSlots){
+                for(let i = target; i < MAX_REF_SLOTS; i++){ refs[i] = null; refDims[i] = null; }
+            }
+            refSlots = target;
+            renderRefGrid();
+            updateSizeUI();
+        }
+        // 点击编号把 IMAGE n 插到提示词光标处，方便直接描述第几张参考图
+        function insertRefTag(slot, ev){
+            if(ev) ev.stopPropagation();
+            const ta = document.getElementById('promptInput');
+            if(!ta) return;
+            const tag = `IMAGE ${slot}`;
+            const start = ta.selectionStart ?? ta.value.length;
+            const end = ta.selectionEnd ?? ta.value.length;
+            const before = ta.value.slice(0, start), after = ta.value.slice(end);
+            const padL = before && !/\s$/.test(before) ? ' ' : '';
+            const padR = after && !/^\s/.test(after) ? ' ' : '';
+            ta.value = before + padL + tag + padR + after;
+            const caret = (before + padL + tag + padR).length;
+            ta.focus();
+            try { ta.setSelectionRange(caret, caret); } catch(e) {}
+        }
         window.addEventListener('paste', e => {
             const item = [...(e.clipboardData?.items || [])].find(x => x.kind === 'file' && x.type.startsWith('image/'));
-            if (item) handleFile(item.getAsFile(), firstEmptySlot());
+            if(!item) return;
+            const slot = firstEmptySlot();
+            if(slot < 0){ alert(rt('full')); return; }
+            handleFile(item.getAsFile(), slot);
         });
-        function firstEmptySlot(){ return [1,2,3].find(id => !refs[id]) || 1; }
-
-        async function handleFile(file, index){
-            if(!file) return;
+        function firstEmptySlot(){
+            for(let i = 0; i < refSlots; i++) if(!refs[i]) return i;
+            return -1;
+        }
+        async function handleFiles(fileList, startSlot){
+            const files = [...(fileList || [])].filter(f => f && (
+                (f.type || '').startsWith('image/') || /\.(png|jpe?g|webp|gif|bmp|tiff?)$/i.test(f.name || '')
+            ));
+            if(!files.length) return;
+            let slot = Math.max(0, startSlot || 0);
+            for(const file of files){
+                while(slot < refSlots && refs[slot]) slot++;
+                if(slot >= refSlots){ alert(rt('full')); break; }
+                await handleFile(file, slot++);
+            }
+        }
+        function showRefPreview(slot, src){
+            const zone = document.getElementById(`drop-zone-${slot}`);
+            if(!zone) return;
+            const prev = document.getElementById(`prev${slot}`);
+            if(prev){ prev.src = src; prev.classList.remove('hidden'); }
+            zone.querySelector('.ref-plus')?.classList.add('hidden');
+            zone.querySelector('.ref-empty-text')?.classList.add('hidden');
+            document.getElementById(`del${slot}`)?.classList.remove('hidden');
+        }
+        async function handleFile(file, slot){
+            if(!file || slot < 0 || slot >= refSlots) return;
             const reader = new FileReader();
             reader.onload = e => {
-                const prev = document.getElementById(`prev${index}`);
-                prev.src = e.target.result; prev.classList.remove('hidden');
-                document.getElementById(`del${index}`).classList.remove('hidden');
+                showRefPreview(slot, e.target.result);
                 getImageDimensions(e.target.result).then(dim => {
-                    refDims[index] = dim;
+                    refDims[slot] = dim;
                     updateSizeUI();
                 }).catch(() => {});
             };
             reader.readAsDataURL(file);
-            const form = new FormData();
-            form.append('files', file);
-            const data = await fetch('/api/ai/upload', {method:'POST', body:form}).then(r=>r.json());
-            refs[index] = data.files[0];
+            try {
+                const form = new FormData();
+                form.append('files', file);
+                const res = await fetch('/api/ai/upload', {method:'POST', body:form});
+                const data = await res.json();
+                const item = data.files?.[0];
+                if(!res.ok || !item?.url) throw new Error(data.detail || '上传失败');
+                refs[slot] = item;
+                updateRefMeta();
+            } catch(err){
+                clearSlot(slot);
+                alert(rt('uploadFailed') + (err.message || ''));
+            }
         }
-        function clearSlot(index, ev){
+        function clearSlot(slot, ev){
             if(ev) ev.stopPropagation();
-            refs[index] = null;
-            refDims[index] = null;
-            document.getElementById(`prev${index}`).src = '';
-            document.getElementById(`prev${index}`).classList.add('hidden');
-            document.getElementById(`del${index}`).classList.add('hidden');
+            refs[slot] = null;
+            refDims[slot] = null;
+            const zone = document.getElementById(`drop-zone-${slot}`);
+            if(zone){
+                const prev = document.getElementById(`prev${slot}`);
+                if(prev){ prev.src = ''; prev.classList.add('hidden'); }
+                zone.querySelector('.ref-plus')?.classList.remove('hidden');
+                zone.querySelector('.ref-empty-text')?.classList.remove('hidden');
+            }
+            document.getElementById(`del${slot}`)?.classList.add('hidden');
+            updateRefMeta();
+            updateSizeUI();
+        }
+        function activeReferences(){
+            const images = [], slots = [];
+            for(let i = 0; i < refSlots; i++){
+                if(refs[i]){ images.push(refs[i]); slots.push(i); }
+            }
+            return {images, slots};
         }
 
         async function submitImage(){
@@ -584,7 +752,9 @@
             const btn = document.getElementById('genBtn'), loader = document.getElementById('loader'), placeholder = document.getElementById('placeholder'), out = document.getElementById('outputImg'), dl = document.getElementById('downloadBtn');
             btn.disabled = true; placeholder.classList.add('hidden'); out.classList.add('hidden'); dl.classList.add('hidden'); loader.classList.remove('hidden');
             try {
-                const reqBody = { prompt, provider_id:provider, model:selectedModel, size:currentSize(), n:outputCount, reference_images:Object.values(refs).filter(Boolean) };
+                const active = activeReferences();
+                const reqBody = { prompt, provider_id:provider, model:selectedModel, size:currentSize(), n:outputCount,
+                    reference_images:active.images, reference_slots:active.slots };
                 if(QUALITY_PROTOCOLS.has(providerProtocol(provider))) reqBody.quality = quality;
                 const result = await fetch('/api/online-image', {
                     method:'POST', headers:{'Content-Type':'application/json'},
@@ -669,15 +839,25 @@
         function applySameStyle(){
             if(!currentLightboxData) return;
             document.getElementById('promptInput').value = currentLightboxData.prompt || '';
-            [1,2,3].forEach(id => clearSlot(id));
-            (currentLightboxData.params?.reference_images || []).slice(0,3).forEach((ref,i) => {
-                refs[i+1] = ref; const prev = document.getElementById(`prev${i+1}`);
-                prev.src = ref.url; prev.classList.remove('hidden'); document.getElementById(`del${i+1}`).classList.remove('hidden');
+            const saved = currentLightboxData.params?.reference_images || [];
+            const savedSlots = currentLightboxData.params?.reference_slots || [];
+            const maxSlot = savedSlots.reduce((m, v) => Math.max(m, Number(v) || 0), -1);
+            refs = Array(MAX_REF_SLOTS).fill(null);
+            refDims = Array(MAX_REF_SLOTS).fill(null);
+            refSlots = Math.min(MAX_REF_SLOTS, Math.max(DEFAULT_REF_SLOTS, saved.length, maxSlot + 1));
+            renderRefGrid();
+            saved.slice(0, MAX_REF_SLOTS).forEach((ref, i) => {
+                const n = Number(savedSlots[i]);
+                const slot = Number.isInteger(n) && n >= 0 && n < refSlots ? n : i;
+                if(!ref?.url) return;
+                refs[slot] = ref;
+                showRefPreview(slot, ref.url);
                 getImageDimensions(ref.url).then(dim => {
-                    refDims[i+1] = dim;
+                    refDims[slot] = dim;
                     updateSizeUI();
                 }).catch(() => {});
             });
+            updateRefMeta();
             const size = currentLightboxData.params?.size || '1024x1024';
             const matchedRatio = Object.keys(SIZE_OPTIONS).find(key => SIZE_OPTIONS[key].some(([value]) => value === size)) || 'square';
             const matchedRes = SIZE_OPTIONS[matchedRatio]?.find(([value]) => value === size)?.[1];
@@ -700,7 +880,7 @@
             if(res.success) document.getElementById(`history-${ts}`)?.remove();
         }
         const observer = new IntersectionObserver(entries => { if(entries[0].isIntersecting && currentIndex < allHistory.length) loadHistory(1); }, {threshold:.1});
-        window.onload = async () => { applyLanguage(); setRatio('square'); setResolution('1k'); await initModels(); await loadHistory(0); window.HistoryBulkManager?.attach({masonry:'#masonry'}); observer.observe(document.getElementById('loadMoreTrigger')); document.getElementById('loadMoreTrigger').onclick = () => loadHistory(1); };
+        window.onload = async () => { applyLanguage(); renderRefGrid(); setRatio('square'); setResolution('1k'); await initModels(); await loadHistory(0); window.HistoryBulkManager?.attach({masonry:'#masonry'}); observer.observe(document.getElementById('loadMoreTrigger')); document.getElementById('loadMoreTrigger').onclick = () => loadHistory(1); };
     </script>
 </body>
 </html>

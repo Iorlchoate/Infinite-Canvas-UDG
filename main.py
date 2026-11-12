@@ -2763,6 +2763,9 @@ class OnlineImageRequest(BaseModel):
     quality: str = "auto"
     n: int = 1
     reference_images: List[AIReference] = []
+    # 在线生图槽位的固定编号（IMAGE 0 ~ IMAGE 8），与 reference_images 一一对应。
+    # 允许中间空槽位：例如只填了 0/2/4 号时传 [0, 2, 4]，便于提示词按编号指代。
+    reference_slots: List[int] = []
     operation: str = ""
     resolution_type: str = ""
 
@@ -13930,13 +13933,40 @@ async def fetch_upstream_models(provider_id: str):
         raise HTTPException(status_code=400, detail=f"{provider.get('name') or provider_id} 未配置 API Key")
     return await fetch_models_from_upstream(provider.get("base_url") or "", api_key, provider_protocol(provider), provider.get("image_request_mode") or "openai")
 
+# 提示词里出现 IMAGE n / 图 n / 第 n 张 时，才补一段编号映射说明，避免影响常规生图。
+REFERENCE_IMAGE_TAG_RE = re.compile(r"(?:IMAGE\s*[-_]?\s*\d+|图\s*\d+|第\s*\d+\s*张图?)", re.I)
+
+def reference_index_note(prompt, image_refs, slots=None):
+    """把前端槽位编号（IMAGE 0~8）与实际传给上游的图片顺序对齐。
+    前端允许跳过某些槽位，例如只上传 0/2/4 号，此时第 2 张图仍是 IMAGE 2。"""
+    if not image_refs or not REFERENCE_IMAGE_TAG_RE.search(prompt or ""):
+        return ""
+    parts = []
+    for i in range(len(image_refs)):
+        slot = i
+        if slots and i < len(slots):
+            try:
+                value = int(slots[i])
+                if 0 <= value < ONLINE_IMAGE_REFERENCE_MAX:
+                    slot = value
+            except (TypeError, ValueError):
+                pass
+        parts.append(f"第{i + 1}张=IMAGE {slot}")
+    return ("\n[参考图编号（按图片传入顺序）：" + "，".join(parts)
+            + "。提示词里的 IMAGE n 按此对应理解；编号只是索引，不是要画进画面的文字。]\n")
+
 async def build_online_image_result(payload: OnlineImageRequest):
     provider = get_api_provider(payload.provider_id)
     default_model = (provider.get("image_models") or [IMAGE_MODEL])[0]
     model = selected_model(payload.model, default_model)
     request_size = snap_size_to_multiple(payload.size, 16)
     refs = [ref.dict() for ref in payload.reference_images if ref.url]
+    ref_slots = list(payload.reference_slots or [])[:len(refs)]
     image_refs = image_references(refs)
+    prompt_for_model = payload.prompt
+    note = reference_index_note(payload.prompt, image_refs, ref_slots)
+    if note:
+        prompt_for_model = payload.prompt.rstrip() + note
     count = max(1, min(8, int(payload.n or 1)))
     operation = str(payload.operation or "").strip().lower()
     if operation == "upscale":
@@ -13950,7 +13980,7 @@ async def build_online_image_result(payload: OnlineImageRequest):
             image_data, raw_item = await generate_jimeng_upscale_image(image_refs, payload.resolution_type)
         else:
             image_data, raw_item = await generate_ai_image(
-                payload.prompt, request_size, payload.quality, model, image_refs, provider["id"],
+                prompt_for_model, request_size, payload.quality, model, image_refs, provider["id"],
                 payload.aspect_ratio, payload.resolution,
             )
         try:
@@ -13995,7 +14025,7 @@ async def build_online_image_result(payload: OnlineImageRequest):
         "provider_name": provider.get("name") or provider["id"],
         "task_id": extract_task_id(raw) if isinstance(raw, dict) else None,
         "request_id": raw.get("id") if isinstance(raw, dict) else None,
-        "params": {"provider_id": provider["id"], "model": model, "size": request_size, "requested_size": payload.size, "quality": payload.quality, "n": count, "reference_images": refs},
+        "params": {"provider_id": provider["id"], "model": model, "size": request_size, "requested_size": payload.size, "quality": payload.quality, "n": count, "reference_images": refs, "reference_slots": ref_slots},
         "raw_usage": raw.get("usage") if isinstance(raw, dict) else None,
     }
     save_to_history(result)
