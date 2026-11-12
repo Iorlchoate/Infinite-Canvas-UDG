@@ -1,13 +1,12 @@
 /* =========================================================================
- * 无限画布-UDG版 · 建筑设计工作台
+ * 自定义工作流（原建筑设计工作台）
  * -------------------------------------------------------------------------
- * 四个固定图生图工作流：底图 + 参考图 → 成图。
- * 节点结构：① 底图(image) + ② 参考图(image) + 提示词(prompt)
- *            → API 出图(generator) → 成果(output)
- * 两个 image 节点为空白上传占位；连线顺序固定，保证「图 1 结构 / 图 2 风格」。
- * 出图引擎默认走已配置的 API 模型（type: generator）。
+ * 模板 = 底图(image) + 参考图(image) + 提示词(prompt)
+ *        → API 出图(generator) → 成果(output)
+ * 四个建筑模板只是内置起点，名称 / 描述 / 画幅 / 节点名 / 提示词 / 关键词
+ * 替换规则都可以改；全部改动自动保存在本机 localStorage，可新建、另存为、
+ * 删除自定义模板或把内置模板还原默认。
  * 依赖：/api/providers、/api/config、/api/canvases
- * 不改动既有页面逻辑；通过 postMessage 请求外壳切换到目标画布。
  * ========================================================================= */
 (function () {
   'use strict';
@@ -16,22 +15,30 @@
   const esc = (s) => String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  const icons = () => { if (window.lucide) window.lucide.createIcons(); };
+
+  const LS_KEY = 'custom_workflows_v1';
+  const RATIO_OPTIONS = [
+    ['wide', '16:9 · 横图'], ['landscape', '3:2 · 横图'], ['landscape43', '4:3 · 图纸'],
+    ['square', '1:1 · 方图'], ['portrait', '2:3 · 竖图'], ['portrait43', '3:4 · 竖图'],
+    ['story', '9:16 · 竖屏'], ['ultrawide', '21:9 · 超宽'], ['ultratall', '9:21 · 超高']
+  ];
+  const RATIO_SHORT = {
+    wide: '16:9', landscape: '3:2', landscape43: '4:3', square: '1:1',
+    portrait: '2:3', portrait43: '3:4', story: '9:16', ultrawide: '21:9', ultratall: '9:21'
+  };
 
   /* ---------------------------------------------------------------------
-   * 四条工作流。prompt 采用建筑学长式的动作化指令表达：
-   * 上传什么 → 一键生成什么 → 严格保持什么 → 禁止什么。
-   * 双图角色写死：第一张结构底图，第二张仅作风格参考。
+   * 内置模板：双图角色固定为「图 1 结构底图 / 图 2 风格参考」。
    * ------------------------------------------------------------------- */
-  const FLOWS = [
+  const DEFAULT_FLOWS = [
     {
       id: 'axon',
-      no: '01',
       title: 'SU 轴测体块 → 鸟瞰效果图',
       desc: '上传 SU 轴测白模与风格参考图，保持体量与场地关系不变，一键生成鸟瞰效果图。',
       input: 'SU 轴测体块模型 + 参考图',
       output: '鸟瞰效果图',
-      ratio: 'wide',                    // 16:9，画布 SIZE_MAP key
-      ratioLabel: '16:9 · 鸟瞰',
+      ratio: 'wide',
       baseName: '① 底图 · 拖入 SU 轴测体块',
       refName: '② 参考图 · 拖入风格参考',
       prompt: [
@@ -44,13 +51,11 @@
     },
     {
       id: 'sketch',
-      no: '02',
       title: '手绘线稿 → 建筑效果图',
       desc: '上传手绘线稿与参考图，保留透视、体量与开窗位置，一键生成真实效果图。',
       input: '手绘线稿 + 参考图',
       output: '建筑效果图',
-      ratio: 'landscape',              // 3:2
-      ratioLabel: '3:2 · 人视',
+      ratio: 'landscape',
       baseName: '① 底图 · 拖入手绘线稿',
       refName: '② 参考图 · 拖入风格参考',
       prompt: [
@@ -63,13 +68,11 @@
     },
     {
       id: 'masterplan',
-      no: '03',
       title: '黑白总平 → 彩色总图',
       desc: '上传黑白总平面图与参考图，按原有路网与绿化范围精准填色，一键生成彩色总平面图。',
       input: '黑白总平面图 + 参考图',
       output: '彩色总平面图',
-      ratio: 'landscape43',            // 4:3
-      ratioLabel: '4:3 · 图纸',
+      ratio: 'landscape43',
       baseName: '① 底图 · 拖入黑白总平面',
       refName: '② 参考图 · 拖入配色参考',
       prompt: [
@@ -82,13 +85,11 @@
     },
     {
       id: 'floorplan',
-      no: '04',
       title: '黑白户型 → 彩平填色',
       desc: '上传黑白户型图与参考图，保留墙体门窗与家具布置，一键完成彩平填色。',
       input: '黑白户型平面图 + 参考图',
       output: '彩色户型平面图',
-      ratio: 'landscape43',            // 4:3
-      ratioLabel: '4:3 · 图纸',
+      ratio: 'landscape43',
       baseName: '① 底图 · 拖入黑白户型图',
       refName: '② 参考图 · 拖入配色参考',
       prompt: [
@@ -102,12 +103,13 @@
   ];
 
   const state = {
-    flow: FLOWS[0],
-    prompts: {},                     // 每个工作流独立的编辑缓冲
+    flows: [],
+    flow: null,
     online: false,
     provider: null,                  // { id, name, model, hasKey }
     fallbackModel: '',
-    busy: false
+    busy: false,
+    saveTimer: null
   };
 
   /* ---------------- 基础工具 ---------------- */
@@ -122,9 +124,7 @@
   function uid(prefix) { return 'bw_' + prefix + '_' + Math.random().toString(36).slice(2, 9); }
   function applyTheme(theme) { document.documentElement.classList.toggle('theme-dark', theme === 'dark'); }
   function safeLS(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
-  function currentPrompt() {
-    return state.prompts[state.flow.id] != null ? state.prompts[state.flow.id] : state.flow.prompt;
-  }
+  function currentPrompt() { return state.flow ? state.flow.prompt : ''; }
   function finalPrompt() {
     const extra = $('extra').value.trim();
     return extra ? currentPrompt() + '\n【项目补充】' + extra : currentPrompt();
@@ -132,6 +132,68 @@
   function setNotice(text) {
     $('notice').textContent = text || '';
     $('notice').classList.toggle('show', Boolean(text));
+  }
+
+  /* ---------------- 模板存取：本机 localStorage 自动保存 ---------------- */
+
+  function normalizeFlow(raw, fallback) {
+    const base = fallback || {};
+    const f = Object.assign({}, base, raw || {});
+    f.id = String(f.id || uid('flow'));
+    f.custom = Boolean(f.custom);
+    f.title = f.title || '未命名模板';
+    f.desc = f.desc || '';
+    f.input = f.input || '底图 + 参考图';
+    f.output = f.output || '成图';
+    f.ratio = RATIO_SHORT[f.ratio] ? f.ratio : 'wide';
+    f.baseName = f.baseName || '① 底图 · 拖入结构底图';
+    f.refName = f.refName || '② 参考图 · 拖入风格参考';
+    f.prompt = typeof f.prompt === 'string' ? f.prompt : (base.prompt || '');
+    f.keywords = Array.isArray(f.keywords)
+      ? f.keywords.filter(k => k && typeof k.from === 'string').map(k => ({ from: k.from, to: k.to || '' }))
+      : [];
+    return f;
+  }
+
+  function loadFlows() {
+    let saved = null;
+    try { saved = JSON.parse(safeLS(LS_KEY) || 'null'); } catch (e) { saved = null; }
+    if (saved && Array.isArray(saved.flows) && saved.flows.length) {
+      return saved.flows.map(f => normalizeFlow(f, DEFAULT_FLOWS.find(d => d.id === f.id)));
+    }
+    return DEFAULT_FLOWS.map(f => normalizeFlow(f, f));
+  }
+
+  function saveFlows() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({ version: 1, savedAt: Date.now(), flows: state.flows }));
+      $('save-state').textContent = '已自动保存到本机';
+    } catch (e) {
+      $('save-state').textContent = '保存失败：浏览器存储不可用';
+    }
+    renderCards();
+    refreshHeadings();
+    renderGraph();
+  }
+
+  function scheduleSave() {
+    $('save-state').textContent = '保存中…';
+    clearTimeout(state.saveTimer);
+    state.saveTimer = setTimeout(saveFlows, 350);
+  }
+
+  // 把表单当前值写回内存中的模板（切换模板 / 生成画布前都会调用）
+  function syncFlowFromUI() {
+    const f = state.flow;
+    if (!f) return;
+    f.title = $('tpl-title').value;
+    f.desc = $('tpl-desc').value;
+    f.input = $('tpl-input').value;
+    f.output = $('tpl-output').value;
+    f.ratio = $('tpl-ratio').value;
+    f.baseName = $('tpl-base').value;
+    f.refName = $('tpl-ref').value;
+    f.prompt = $('prompt').value;
   }
 
   /* ---------------- 连接与模型配置 ---------------- */
@@ -182,55 +244,192 @@
   /* ---------------- 卡片与详情 ---------------- */
 
   function renderCards() {
-    $('wf-grid').innerHTML = FLOWS.map(f => `
-      <button class="wf-card ${f.id === state.flow.id ? 'active' : ''}" data-id="${f.id}">
-        <span class="wf-no">${f.no} / ${esc(f.ratioLabel)}</span>
+    $('wf-grid').innerHTML = state.flows.map((f, i) => `
+      <button class="wf-card ${f.id === state.flow.id ? 'active' : ''}" data-id="${esc(f.id)}">
+        <span class="wf-no">${String(i + 1).padStart(2, '0')} / ${esc(RATIO_SHORT[f.ratio] || '')}
+          <span class="wf-tag">${f.custom ? '自定义' : '内置模板'}</span></span>
         <span class="wf-t">${esc(f.title)}</span>
         <span class="wf-d">${esc(f.desc)}</span>
         <span class="wf-io">${esc(f.input)}<i>→</i>${esc(f.output)}</span>
       </button>`).join('');
   }
 
-  function renderDetail() {
+  function refreshHeadings() {
     const f = state.flow;
+    if (!f) return;
     $('d-title').textContent = f.title;
     $('d-desc').textContent = f.input + '  →  ' + f.output + ' · 严格保持底图形体，参考图只控制风格';
-    $('prompt').value = currentPrompt();
+  }
+
+  function renderDetail() {
+    const f = state.flow;
+    if (!f) return;
+    refreshHeadings();
+    $('tpl-title').value = f.title;
+    $('tpl-desc').value = f.desc;
+    $('tpl-input').value = f.input;
+    $('tpl-output').value = f.output;
+    $('tpl-ratio').value = f.ratio;
+    $('tpl-base').value = f.baseName;
+    $('tpl-ref').value = f.refName;
+    $('prompt').value = f.prompt;
+    $('btn-delete').style.display = f.custom ? '' : 'none';
+    $('btn-reset').style.display = f.custom ? 'none' : '';
     updateCount();
+    renderKeywords();
     renderGraph();
   }
 
   function updateCount() { $('prompt-count').textContent = $('prompt').value.length + ' 字'; }
 
   function selectFlow(id) {
-    const f = FLOWS.find(x => x.id === id);
-    if (!f) return;
-    // 离开前把当前编辑内容存起来，切换回来不丢
-    state.prompts[state.flow.id] = $('prompt').value;
+    const f = state.flows.find(x => x.id === id);
+    if (!f || f === state.flow) return;
+    syncFlowFromUI();
     state.flow = f;
     renderCards();
     renderDetail();
+    saveFlows();
+  }
+
+  /* ---------------- 模板定制动作 ---------------- */
+
+  function blankFlow() {
+    return normalizeFlow({
+      id: uid('flow'),
+      custom: true,
+      title: '新工作流模板',
+      desc: '自定义「底图 + 参考图 → 成图」流程，按需要改提示词与画幅。',
+      input: '底图 + 参考图',
+      output: '成图',
+      ratio: 'wide',
+      prompt: [
+        '【任务】以第一张图为结构底图，参考第二张图的风格生成目标画面。',
+        '【底图 · 严格保持】保留底图的构图、透视与主要内容，不重新设计。',
+        '【参考图 · 只借风格】第二张图仅提供材质、配色与光影，不迁移其形体。',
+        '【画面】',
+        '【禁止】不出现任何文字、标注、Logo 与水印。'
+      ].join('\n'),
+      keywords: []
+    });
+  }
+
+  function createFlow() {
+    syncFlowFromUI();
+    const f = blankFlow();
+    state.flows.push(f);
+    state.flow = f;
+    renderCards();
+    renderDetail();
+    saveFlows();
+    toast('已新建模板，改动会自动保存');
+  }
+
+  function saveAsFlow() {
+    syncFlowFromUI();
+    const copy = normalizeFlow(Object.assign({}, state.flow, {
+      id: uid('flow'),
+      custom: true,
+      title: state.flow.title + ' · 副本'
+    }));
+    copy.keywords = (state.flow.keywords || []).map(k => ({ from: k.from, to: k.to }));
+    state.flows.push(copy);
+    state.flow = copy;
+    renderCards();
+    renderDetail();
+    saveFlows();
+    toast('已另存为新模板，可继续修改');
+  }
+
+  function deleteFlow() {
+    if (!state.flow.custom) { toast('内置模板不可删除，可用「还原默认」恢复'); return; }
+    if (!confirm('删除模板「' + state.flow.title + '」？此操作不可恢复。')) return;
+    const idx = state.flows.indexOf(state.flow);
+    state.flows.splice(idx, 1);
+    if (!state.flows.length) state.flows = DEFAULT_FLOWS.map(f => normalizeFlow(f, f));
+    state.flow = state.flows[Math.max(0, Math.min(idx, state.flows.length - 1))];
+    renderCards();
+    renderDetail();
+    saveFlows();
+    toast('模板已删除');
+  }
+
+  function resetFlow() {
+    const def = DEFAULT_FLOWS.find(d => d.id === state.flow.id);
+    if (!def) { toast('自定义模板没有内置默认，可继续编辑或删除'); return; }
+    if (!confirm('把「' + def.title + '」恢复为内置默认内容？你的修改会被覆盖。')) return;
+    const fresh = normalizeFlow(def, def);
+    state.flows[state.flows.indexOf(state.flow)] = fresh;
+    state.flow = fresh;
+    renderCards();
+    renderDetail();
+    saveFlows();
+    toast('已还原为默认模板');
+  }
+
+  /* ---------------- 关键词替换 ---------------- */
+
+  function renderKeywords() {
+    const list = state.flow.keywords || [];
+    $('kw-empty').style.display = list.length ? 'none' : 'block';
+    $('kw-list').innerHTML = list.map((k, i) => `
+      <div class="kw-row">
+        <input data-kw="from" data-i="${i}" value="${esc(k.from)}" placeholder="原词，如：鸟瞰">
+        <span class="kw-arrow">→</span>
+        <input data-kw="to" data-i="${i}" value="${esc(k.to)}" placeholder="替换为，如：人视">
+        <button class="kw-del" data-del="${i}" title="删除这条">×</button>
+      </div>`).join('');
+  }
+
+  function addKeyword() {
+    state.flow.keywords.push({ from: '', to: '' });
+    renderKeywords();
+    scheduleSave();
+    const inputs = $('kw-list').querySelectorAll('input[data-kw="from"]');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+
+  function applyKeywords() {
+    const pairs = (state.flow.keywords || []).filter(k => k.from && k.from.trim());
+    if (!pairs.length) { toast('先添加至少一条「原词 → 替换为」'); return; }
+    let text = $('prompt').value;
+    let count = 0;
+    pairs.forEach(p => {
+      const from = p.from.trim();
+      if (!from) return;
+      const parts = text.split(from);
+      if (parts.length > 1) {
+        count += parts.length - 1;
+        text = parts.join(p.to || '');
+      }
+    });
+    $('prompt').value = text;
+    state.flow.prompt = text;
+    updateCount();
+    scheduleSave();
+    toast(count ? '已替换 ' + count + ' 处关键词' : '提示词里没有找到这些词');
   }
 
   /* ---------------- 节点流程图 ---------------- */
 
-  const NW = 182, NH = 54, GAP = 16, PAD = 16;
-  const CX = [16, 262, 508];
+  const NW = 168, NH = 52, GAP = 14, PAD = 14;
+  const CX = [14, 200, 386];
   const NODE_STYLE = {
-    image:   { badge: 'I', bg: '#e9eef3', ink: '#3d5b74' },
-    prompt:  { badge: 'P', bg: '#e9eef3', ink: '#3d5b74' },
-    gen:     { badge: 'G', bg: '#e8eef0', ink: '#356272' },
+    image:   { badge: 'I', bg: '#eef2f7', ink: '#3c4149' },
+    prompt:  { badge: 'P', bg: '#eef2f7', ink: '#3c4149' },
+    gen:     { badge: 'G', bg: '#eef2f7', ink: '#111827' },
     output:  { badge: 'O', bg: '#e7efe9', ink: '#3a6b51' }
   };
 
   function bezier(x1, y1, x2, y2) {
     const dx = Math.max(26, (x2 - x1) * 0.45);
     return `<path d="M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}"
-      fill="none" stroke="var(--border-strong)" stroke-width="1.3" marker-end="url(#bwArrow)"/>`;
+      fill="none" stroke="var(--line-strong)" stroke-width="1.3" marker-end="url(#bwArrow)"/>`;
   }
 
   function renderGraph() {
     const f = state.flow;
+    if (!f) return;
     const rows = 3;
     const height = PAD * 2 + rows * NH + (rows - 1) * GAP;
     const width = CX[2] + NW + PAD;
@@ -244,14 +443,14 @@
     const nodes = [
       { id: 'base', type: 'image',  col: 0, y: y(0), label: '① 底图', sub: '拖入 · 结构保持' },
       { id: 'ref',  type: 'image',  col: 0, y: y(1), label: '② 参考图', sub: '拖入 · 只借风格' },
-      { id: 'p',    type: 'prompt', col: 0, y: y(2), label: '提示词', sub: '可编辑 · 已写好' },
-      { id: 'g',    type: 'gen',    col: 1, y: centerY, label: 'API 出图', sub: f.ratioLabel + ' · 1K' },
+      { id: 'p',    type: 'prompt', col: 0, y: y(2), label: '提示词', sub: '可编辑 · 自动保存' },
+      { id: 'g',    type: 'gen',    col: 1, y: centerY, label: 'API 出图', sub: (RATIO_SHORT[f.ratio] || '') + ' · 1K' },
       { id: 'o',    type: 'output', col: 2, y: centerY, label: '成果', sub: '1 张成图' }
     ];
 
     const pos = {};
     nodes.forEach(n => { pos[n.id] = { x: CX[n.col], y: n.y }; });
-    const arrow = '<defs><marker id="bwArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--border-strong)"/></marker></defs>';
+    const arrow = '<defs><marker id="bwArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line-strong)"/></marker></defs>';
 
     let paths = '';
     ['base', 'ref', 'p'].forEach(id => {
@@ -264,12 +463,12 @@
     nodes.forEach(n => {
       const p = pos[n.id], m = NODE_STYLE[n.type];
       cards += `<g>
-        <rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="6"
-          fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1"/>
-        <rect x="${p.x + 10}" y="${p.y + 13}" width="28" height="28" rx="5" fill="${m.bg}"/>
+        <rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="12"
+          fill="var(--card)" stroke="var(--line-strong)" stroke-width="1"/>
+        <rect x="${p.x + 10}" y="${p.y + 13}" width="28" height="28" rx="9" fill="${m.bg}"/>
         <text x="${p.x + 24}" y="${p.y + 32}" text-anchor="middle" font-size="11" font-weight="700" fill="${m.ink}">${m.badge}</text>
-        <text x="${p.x + 47}" y="${p.y + 24}" font-size="11.5" font-weight="600" fill="var(--text)">${esc(n.label)}</text>
-        <text x="${p.x + 47}" y="${p.y + 41}" font-size="10" fill="var(--text-3)">${esc(n.sub)}</text>
+        <text x="${p.x + 47}" y="${p.y + 24}" font-size="11.5" font-weight="700" fill="var(--ink)">${esc(n.label)}</text>
+        <text x="${p.x + 47}" y="${p.y + 41}" font-size="10" fill="var(--muted)">${esc(n.sub)}</text>
       </g>`;
     });
     svg.innerHTML = arrow + paths + cards;
@@ -325,6 +524,7 @@
         domain: 'architecture',
         workflow_id: f.id,
         workflow_name: f.title,
+        custom_workflow: Boolean(f.custom),
         image_roles: { base: baseId, reference: refId },
         input: f.input,
         output: f.output,
@@ -361,6 +561,8 @@
       toast('本地服务未连接，请先启动 START.exe');
       return;
     }
+    syncFlowFromUI();
+    saveFlows();
     state.busy = true;
     const btn = $('btn-go');
     btn.disabled = true;
@@ -389,7 +591,8 @@
       toast('生成画布失败：' + e.message);
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<span>生成画布</span><span class="arrow">→</span>';
+      btn.innerHTML = '<i data-lucide="zap" class="icon"></i><span>生成画布</span>';
+      icons();
       state.busy = false;
     }
   }
@@ -427,6 +630,7 @@
   }
 
   async function copyPrompt() {
+    syncFlowFromUI();
     const text = finalPrompt();
     try { await navigator.clipboard.writeText(text); toast('提示词已复制'); }
     catch (e) {
@@ -440,6 +644,10 @@
 
   /* ---------------- 事件绑定 ---------------- */
 
+  function fillRatioOptions() {
+    $('tpl-ratio').innerHTML = RATIO_OPTIONS.map(([v, label]) => `<option value="${v}">${label}</option>`).join('');
+  }
+
   function init() {
     applyTheme(safeLS('studio_theme') || safeLS('canvas_theme') || 'light');
     window.addEventListener('message', (e) => {
@@ -449,23 +657,60 @@
       if (d.type === 'studio-lang') document.documentElement.lang = d.lang === 'en' ? 'en' : 'zh-CN';
     });
 
+    state.flows = loadFlows();
+    state.flow = state.flows[0];
+    fillRatioOptions();
     renderCards();
     renderDetail();
+    icons();
 
     $('wf-grid').addEventListener('click', (e) => {
       const card = e.target.closest('.wf-card');
       if (card) selectFlow(card.dataset.id);
     });
+
+    // 模板设置字段：输入即更新内存，防抖后自动保存并刷新卡片/流程图
+    const FIELD_MAP = {
+      'tpl-title': 'title', 'tpl-desc': 'desc', 'tpl-input': 'input', 'tpl-output': 'output',
+      'tpl-ratio': 'ratio', 'tpl-base': 'baseName', 'tpl-ref': 'refName'
+    };
+    Object.keys(FIELD_MAP).forEach(id => {
+      $(id).addEventListener('input', () => {
+        state.flow[FIELD_MAP[id]] = $(id).value;
+        scheduleSave();
+      });
+      $(id).addEventListener('change', () => {
+        state.flow[FIELD_MAP[id]] = $(id).value;
+        scheduleSave();
+      });
+    });
+
     $('prompt').addEventListener('input', () => {
-      state.prompts[state.flow.id] = $('prompt').value;
+      state.flow.prompt = $('prompt').value;
       updateCount();
+      scheduleSave();
     });
-    $('btn-reset').addEventListener('click', () => {
-      delete state.prompts[state.flow.id];
-      $('prompt').value = state.flow.prompt;
-      updateCount();
-      toast('已还原为默认提示词');
+
+    $('kw-list').addEventListener('input', (e) => {
+      const el = e.target.closest('input[data-kw]');
+      if (!el) return;
+      const row = state.flow.keywords[Number(el.dataset.i)];
+      if (row) { row[el.dataset.kw] = el.value; scheduleSave(); }
     });
+    $('kw-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-del]');
+      if (!btn) return;
+      state.flow.keywords.splice(Number(btn.dataset.del), 1);
+      renderKeywords();
+      scheduleSave();
+    });
+    $('btn-kw-add').addEventListener('click', addKeyword);
+    $('btn-kw-apply').addEventListener('click', applyKeywords);
+
+    $('btn-new').addEventListener('click', createFlow);
+    $('btn-saveas').addEventListener('click', saveAsFlow);
+    $('btn-delete').addEventListener('click', deleteFlow);
+    $('btn-reset').addEventListener('click', resetFlow);
     $('btn-copy').addEventListener('click', copyPrompt);
     $('btn-go').addEventListener('click', generateCanvas);
     $('btn-canvas').addEventListener('click', openExistingCanvas);

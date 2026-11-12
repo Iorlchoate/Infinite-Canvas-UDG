@@ -1319,7 +1319,7 @@
                         <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"></path>
                         <path d="M19 17l.7 1.8L21.5 19.5l-1.8.7L19 22l-.7-1.8-1.8-.7 1.8-.7L19 17z"></path>
                     </svg>
-                    <span class="nav-text">无限画布-UDG版</span>
+                    <span class="nav-text">自定义工作流</span>
                 </div>
                 <div class="nav-item" onclick="switchUI(this, 'online')">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1438,7 +1438,7 @@
         </script>
 
         <main class="stage">
-            <iframe id="frame-brief" data-src="/static/brief-workbench.html?v=2026.11.12.1.1794323813" scrolling="yes"></iframe>
+            <iframe id="frame-brief" data-src="/static/brief-workbench.html?v=2026.11.12.1.1794464047" scrolling="yes"></iframe>
             <iframe id="frame-online" data-src="/static/online.html?v=2026.11.12.1.1794462336" scrolling="yes"></iframe>
             <iframe id="frame-asset-manager" data-src="/static/asset-manager.html?v=2026.11.12.1.1794324753" scrolling="yes"></iframe>
             <iframe id="frame-api-settings" data-src="/static/api-settings.html?v=2026.11.12.1.1794324753" scrolling="yes"></iframe>
@@ -1640,7 +1640,7 @@
             const data = event.data;
             forwardStudioApiChange(data);
             if (!data || typeof data !== 'object') return;
-            // 无限画布-UDG版 → 打开指定画布（支持智能画布 URL）/ 回到画布列表 / 切换到设置页
+            // 自定义工作流 → 打开指定画布（支持智能画布 URL）/ 回到画布列表 / 切换到设置页
             if (data.type === 'udg-open-canvas' && data.id) {
                 const frame = document.getElementById('frame-canvas');
                 const url = (typeof data.url === 'string' && data.url.startsWith('/static/'))

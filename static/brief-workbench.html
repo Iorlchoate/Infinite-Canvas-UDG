@@ -3,132 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>无限画布-UDG版 · 建筑设计工作台</title>
+<title>自定义工作流 · 模板可定制</title>
+<link rel="stylesheet" href="/static/vendor/css/fonts.css">
+<script src="/static/vendor/js/lucide.js"></script>
 <style>
 :root{
-  --bg:#ffffff;
-  --surface:#ffffff;
-  --surface-2:#f7f8f9;
-  --border:#e6e9ec;
-  --border-strong:#cbd3da;
-  --text:#202a33;
-  --text-2:#5c6873;
-  --text-3:#949fa8;
-  --accent:#33475a;
-  --accent-text:#ffffff;
-  --brand:#3b627d;
-  --brand-soft:#eef3f6;
-  --ok:#317458;
-  --shadow-sm:0 1px 2px rgba(24,40,54,.04);
-  --shadow-md:0 1px 2px rgba(24,40,54,.04),0 10px 28px rgba(24,40,54,.06);
-  --radius:8px;
+  --bg:#f9fafb; --card:#fff; --soft:#f8fafc;
+  --line:#edf0f3; --line-2:#eef0f2; --line-strong:#e2e8f0;
+  --ink:#111827; --ink-2:#64748b; --muted:#94a3b8;
+  --accent:#111827; --accent-ink:#fff; --ok:#317458;
+  --radius:24px; --easing:cubic-bezier(.4,0,.2,1);
+  --shadow:0 2px 15px rgba(0,0,0,.02);
 }
 html.theme-dark{
-  --bg:#15191d;--surface:#1c2126;--surface-2:#232930;
-  --border:#2e363d;--border-strong:#414c55;
-  --text:#eef1f3;--text-2:#a6b0b8;--text-3:#737f88;
-  --accent:#e8edf1;--accent-text:#1b2228;
-  --brand:#8fb4cf;--brand-soft:#233440;--ok:#69b993;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.25);--shadow-md:0 1px 2px rgba(0,0,0,.25),0 10px 28px rgba(0,0,0,.3);
+  --bg:#0f141a; --card:#1b2029; --soft:#232a35;
+  --line:#2b323d; --line-2:#313a46; --line-strong:#3a4450;
+  --ink:#e5e7eb; --ink-2:#a6b0b8; --muted:#8b95a6;
+  --accent:#e5e7eb; --accent-ink:#111827; --ok:#69b993;
+  --shadow:0 2px 15px rgba(0,0,0,.25);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  background:var(--bg);color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
   -webkit-font-smoothing:antialiased;min-height:100vh;font-size:14px;line-height:1.6;
 }
-button,textarea,input{font-family:inherit;font-size:inherit;color:inherit}
+button,textarea,input,select{font-family:inherit;color:inherit}
 button{cursor:pointer}
 button:disabled{cursor:not-allowed;opacity:.45}
+.icon{width:14px;height:14px;flex-shrink:0}
 
 /* 顶栏 */
-.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;
-  border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:20}
-.brandline{display:flex;align-items:center;gap:10px;font-weight:650;font-size:14px}
-.brand-sep{width:1px;height:14px;background:var(--border-strong);margin:0 3px}
-.brand-sub{font-weight:400;color:var(--text-3);font-size:12px}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;
+  border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:20}
+.brandline{display:flex;align-items:center;gap:12px}
+.brand-mark{font-size:13px;font-weight:800;letter-spacing:-.01em}
+.brand-sep{width:1px;height:14px;background:var(--line-strong)}
+.brand-sub{font-size:10px;font-weight:700;letter-spacing:.28em;color:var(--muted);text-transform:uppercase}
 .topbar-right{display:flex;align-items:center;gap:10px}
-.outline-btn{border:1px solid var(--border-strong);background:var(--surface);color:var(--text);
-  padding:6px 12px;border-radius:6px;font-size:12.5px;font-weight:550;transition:.15s;white-space:nowrap}
-.outline-btn:hover{background:var(--surface-2);border-color:var(--text-3)}
-.outline-btn span{margin-left:5px;color:var(--text-3)}
-.link-btn{border:0;background:transparent;color:var(--text-2);padding:6px 8px;border-radius:6px;font-size:12.5px;transition:.15s}
-.link-btn:hover{background:var(--surface-2);color:var(--text)}
+.outline-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink);padding:0 14px;height:34px;border-radius:999px;font-size:11px;font-weight:700;transition:.2s var(--easing);white-space:nowrap}
+.outline-btn:hover{background:var(--soft);border-color:var(--ink-2)}
+.link-btn{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--ink-2);
+  padding:0 10px;height:34px;border-radius:999px;font-size:11px;font-weight:700;transition:.2s var(--easing)}
+.link-btn:hover{background:var(--soft);color:var(--ink)}
 
-.wrap{max-width:960px;margin:0 auto;padding:0 28px 28px}
-.hero{padding:46px 0 26px}
-.eyebrow{font-size:10.5px;letter-spacing:.16em;color:var(--text-3);margin-bottom:11px}
-h1{margin:0 0 8px;font-size:25px;line-height:1.4;font-weight:650;letter-spacing:-.02em}
-.hero p{margin:0;color:var(--text-2);font-size:13px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 40px 40px}
+.hero{padding:44px 0 26px}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:italic;letter-spacing:-.045em}
+.hero p{margin:0;color:var(--ink-2);font-size:12.5px;max-width:720px}
 
-/* 四个工作流 */
-.wf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.section-label{display:flex;align-items:center;gap:7px;color:var(--muted);
+  font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.tpl-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.tpl-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip-btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border-radius:999px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:11px;font-weight:700;transition:.2s var(--easing)}
+.chip-btn:hover{background:var(--soft);border-color:var(--ink-2);transform:translateY(-1px)}
+.chip-btn.dark{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip-btn.dark:hover{filter:brightness(1.08)}
+.save-state{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+
+/* 模板卡片 */
+.wf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 @media(max-width:720px){.wf-grid{grid-template-columns:1fr}}
-.wf-card{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);
-  padding:15px 17px;text-align:left;transition:.15s;min-height:102px;display:flex;flex-direction:column}
-.wf-card:hover{border-color:var(--border-strong);background:var(--surface-2)}
-.wf-card.active{border-color:var(--brand);background:var(--brand-soft);box-shadow:var(--shadow-sm)}
-.wf-no{font-size:10.5px;color:var(--text-3);letter-spacing:.12em;margin-bottom:5px}
-.wf-card.active .wf-no{color:var(--brand)}
-.wf-t{display:block;font-size:14px;font-weight:650;color:var(--text);margin-bottom:4px}
-.wf-d{display:block;font-size:11.5px;color:var(--text-2);line-height:1.55}
-.wf-io{display:block;margin-top:auto;padding-top:9px;font-size:11px;color:var(--text-3)}
-.wf-io i{font-style:normal;margin:0 5px;color:var(--border-strong)}
+.wf-card{position:relative;border:1px solid var(--line);background:var(--card);border-radius:var(--radius);
+  padding:18px 20px;text-align:left;transition:.3s var(--easing);min-height:118px;display:flex;flex-direction:column;
+  box-shadow:var(--shadow);font-family:inherit}
+.wf-card:hover{border-color:var(--ink-2);transform:translateY(-3px)}
+.wf-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.wf-no{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.12em;margin-bottom:8px;text-transform:uppercase}
+.wf-tag{font-size:9px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:999px;background:var(--soft);border:1px solid var(--line);color:var(--ink-2)}
+.wf-card.active .wf-tag{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.wf-t{display:block;font-size:14.5px;font-weight:800;letter-spacing:-.01em;color:var(--ink);margin-bottom:5px}
+.wf-d{display:block;font-size:11.5px;color:var(--ink-2);line-height:1.65}
+.wf-io{display:block;margin-top:auto;padding-top:12px;font-size:10.5px;font-weight:600;color:var(--muted)}
+.wf-io i{font-style:normal;margin:0 6px;color:var(--line-strong)}
 
 /* 详情 */
-.detail{margin-top:26px;animation:fadeUp .25s ease both}
+.detail{margin-top:30px;animation:fadeUp .25s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px;flex-wrap:wrap}
-.detail-head h2{margin:0 0 3px;font-size:16px;font-weight:650}
-.detail-head p{margin:0;font-size:12px;color:var(--text-2)}
-.detail-actions{display:flex;gap:14px;align-items:center}
-.text-btn{border:0;background:transparent;color:var(--text-3);font-size:11.5px;padding:4px 0;transition:.15s}
-.text-btn:hover{color:var(--brand)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
-.detail-label{font-size:10.5px;letter-spacing:.09em;color:var(--text-3);font-weight:650}
-.flow-card{padding:14px 16px 12px;margin-bottom:12px}
-.graph-wrap{margin-top:10px;overflow-x:auto;background:radial-gradient(circle at 1px 1px,var(--border) 1px,transparent 0);background-size:18px 18px;border-radius:6px}
-#graph{display:block;min-width:100%}
-.flow-tip{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-2);line-height:1.7}
-.flow-tip b{font-weight:650;color:var(--text)}
+.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.detail-head h2{margin:0 0 4px;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.detail-head p{margin:0;font-size:11.5px;color:var(--ink-2)}
+.detail-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.detail-grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media(min-width:1024px){.detail-grid{grid-template-columns:1.12fr .88fr}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-note{font-size:10px;color:var(--muted);font-weight:600}
 
-.prompt-card{padding:14px 16px 13px}
-.prompt-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:9px}
-.prompt-count{font-size:10.5px;color:var(--text-3)}
-#prompt{width:100%;min-height:236px;resize:vertical;border:1px solid var(--border);background:var(--surface-2);
-  border-radius:6px;padding:12px 13px;font-size:12.5px;line-height:1.85;outline:none}
-#prompt:focus{border-color:var(--brand)}
-.prompt-foot{margin-top:8px;font-size:11px;color:var(--text-3);display:flex;gap:8px;flex-wrap:wrap}
+.graph-wrap{margin-top:4px;overflow-x:auto;border-radius:16px;background:var(--soft);
+  background-image:radial-gradient(circle at 1px 1px,var(--line-strong) 1px,transparent 0);background-size:18px 18px}
+#graph{display:block;width:100%;height:auto;max-width:100%}
+.flow-tip{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-2);line-height:1.8}
+.flow-tip b{font-weight:700;color:var(--ink)}
+
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>span{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.field input,.field select{width:100%;min-width:0;height:36px;border:1px solid var(--line-2);border-radius:14px;
+  background:var(--soft);padding:0 12px;font-size:11.5px;font-weight:600;outline:none;transition:.2s var(--easing)}
+.field input{background:var(--card)}
+.field input:focus,.field select:focus{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:520px){.field-grid{grid-template-columns:1fr}}
+.field-grid .full{grid-column:1/-1}
+
+#prompt{width:100%;min-height:250px;resize:vertical;border:1px solid var(--line-2);background:var(--card);
+  border-radius:20px;padding:16px 18px;font-size:12.5px;line-height:1.9;outline:none;transition:.2s var(--easing)}
+#prompt:focus{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.prompt-foot{margin-top:10px;font-size:10.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;line-height:1.7}
+
+/* 关键词替换 */
+.kw-row{display:grid;grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr) 30px;gap:8px;align-items:center;margin-bottom:8px}
+.kw-row input{width:100%;min-width:0;height:34px;border:1px solid var(--line-2);border-radius:12px;background:var(--card);
+  padding:0 11px;font-size:11.5px;outline:none}
+.kw-row input:focus{border-color:var(--ink)}
+.kw-arrow{text-align:center;color:var(--muted);font-size:12px}
+.kw-del{width:28px;height:28px;border:0;border-radius:10px;background:var(--soft);color:var(--muted);font-size:14px;line-height:1}
+.kw-del:hover{background:var(--accent);color:var(--accent-ink)}
+.kw-empty{font-size:11px;color:var(--muted);padding:6px 0 10px;line-height:1.7}
+.kw-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 
 /* 生成条 */
-.composer{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
-#extra{flex:1;min-width:220px;border:1px solid var(--border-strong);background:var(--surface);
-  border-radius:6px;padding:9px 12px;font-size:12.5px;outline:none}
-#extra:focus{border-color:var(--brand)}
-#extra::placeholder{color:var(--text-3)}
-.primary-btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-text);
-  border-radius:6px;padding:9px 18px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;
-  transition:.15s;white-space:nowrap}
-.primary-btn:hover:not(:disabled){background:var(--brand);border-color:var(--brand)}
-.primary-btn .arrow{font-size:14px;line-height:1;opacity:.8}
-.hint{margin-top:10px;font-size:11.5px;color:var(--text-3);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.hint .conn{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
-.conn i{width:5px;height:5px;border-radius:50%;background:var(--text-3);display:block}
+.composer{display:flex;gap:10px;flex-wrap:wrap}
+#extra{flex:1;min-width:220px;border:1px solid var(--line-2);background:var(--card);
+  border-radius:20px;padding:14px 18px;font-size:12px;outline:none;transition:.2s var(--easing)}
+#extra:focus{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+#extra::placeholder{color:var(--muted)}
+.primary-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--accent);
+  background:var(--accent);color:var(--accent-ink);border-radius:24px;padding:16px 26px;
+  font-size:11px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;transition:.25s var(--easing);white-space:nowrap}
+.primary-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 24px rgba(0,0,0,.12)}
+.hint{font-size:10.5px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:0 4px}
+.hint .conn{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-weight:700}
+.conn i{width:5px;height:5px;border-radius:50%;background:var(--muted);display:block}
 .conn.online i{background:var(--ok)}
 .conn.online{color:var(--ok)}
 
-.notice{margin-top:14px;padding:9px 13px;border-radius:6px;font-size:11.5px;
-  background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);display:none}
+.notice{margin-top:18px;padding:12px 16px;border-radius:18px;font-size:11.5px;line-height:1.8;
+  background:var(--card);color:var(--ink-2);border:1px solid var(--line);display:none}
 .notice.show{display:block}
-.footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--border);
-  font-size:11px;color:var(--text-3);display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.footer{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:10.5px;color:var(--muted);display:flex;gap:18px;justify-content:center;flex-wrap:wrap;align-items:center}
 .spinner{width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;
   border-radius:50%;display:inline-block;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);
-  background:var(--accent);color:var(--accent-text);padding:9px 16px;border-radius:6px;
-  font-size:12.5px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:.2s;z-index:50}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);
+  background:var(--accent);color:var(--accent-ink);padding:11px 20px;border-radius:999px;
+  font-size:11.5px;font-weight:700;box-shadow:0 12px 28px rgba(0,0,0,.16);opacity:0;pointer-events:none;transition:.2s;z-index:50}
 .toast.show{opacity:1;transform:translateX(-50%)}
 </style>
 </head>
@@ -136,23 +162,32 @@ h1{margin:0 0 8px;font-size:25px;line-height:1.4;font-weight:650;letter-spacing:
 
 <header class="topbar">
   <div class="brandline">
-    <span>无限画布-UDG版</span>
+    <span class="brand-mark">自定义工作流</span>
     <span class="brand-sep"></span>
-    <span class="brand-sub">建筑设计工作台</span>
+    <span class="brand-sub">Custom Workflow Studio</span>
   </div>
   <div class="topbar-right">
-    <button class="outline-btn" id="btn-canvas" title="直接进入画布，不经过生成流程">打开画布<span>↗</span></button>
-    <button class="link-btn" id="btn-settings">模型设置</button>
+    <button class="outline-btn" id="btn-canvas" title="直接进入画布，不经过生成流程"><i data-lucide="arrow-up-right" class="icon"></i>打开画布</button>
+    <button class="link-btn" id="btn-settings"><i data-lucide="settings-2" class="icon"></i>模型设置</button>
   </div>
 </header>
 
 <div class="wrap">
 
   <section class="hero">
-    <div class="eyebrow">底图 + 参考图 → 成图 / 建筑设计</div>
-    <h1>上传底图与参考图，一键生成建筑表现</h1>
-    <p>四个固定工作流 · 结构严格保持 · 风格由参考图控制 · 结果直接写入画布</p>
+    <div class="eyebrow">Base image + Reference → Result</div>
+    <h1>自定义工作流</h1>
+    <p>四个建筑模板只是起点：提示词、关键词、画幅与节点名称都可以按自己的要求改，保存为常用模板。</p>
   </section>
+
+  <div class="tpl-bar">
+    <div class="section-label"><i data-lucide="layout-template" class="icon"></i><span>模板库 · 可定制</span></div>
+    <div class="tpl-actions">
+      <span class="save-state" id="save-state"></span>
+      <button class="chip-btn" id="btn-new"><i data-lucide="plus" class="icon"></i>新建模板</button>
+      <button class="chip-btn" id="btn-saveas"><i data-lucide="copy" class="icon"></i>另存为新模板</button>
+    </div>
+  </div>
 
   <div class="wf-grid" id="wf-grid"></div>
 
@@ -163,48 +198,89 @@ h1{margin:0 0 8px;font-size:25px;line-height:1.4;font-weight:650;letter-spacing:
         <p id="d-desc">—</p>
       </div>
       <div class="detail-actions">
-        <button class="text-btn" id="btn-copy">复制提示词</button>
-        <button class="text-btn" id="btn-reset">还原默认</button>
+        <button class="chip-btn" id="btn-copy"><i data-lucide="clipboard-copy" class="icon"></i>复制提示词</button>
+        <button class="chip-btn" id="btn-reset"><i data-lucide="rotate-ccw" class="icon"></i>还原默认</button>
+        <button class="chip-btn" id="btn-delete"><i data-lucide="trash-2" class="icon"></i>删除模板</button>
       </div>
     </div>
 
-    <div class="card flow-card">
-      <div class="detail-label">节点流程 · 打开画布后拖入图片即可运行</div>
-      <div class="graph-wrap"><svg id="graph" height="0"></svg></div>
-      <div class="flow-tip"><b>① 底图</b> 与 <b>② 参考图</b> 是空白图片节点，拖入或双击上传；<b>提示词</b> 已写好并可在下方修改；运行 <b>API 出图</b> 节点即生成，结果汇入 <b>成果</b>。</div>
-    </div>
+    <div class="detail-grid">
+      <div class="col">
+        <div class="card">
+          <div class="card-head">
+            <div class="section-label"><i data-lucide="workflow" class="icon"></i><span>节点流程</span></div>
+            <span class="card-note">打开画布后拖入图片即可运行</span>
+          </div>
+          <div class="graph-wrap"><svg id="graph" height="0"></svg></div>
+          <div class="flow-tip"><b>① 底图</b> 与 <b>② 参考图</b> 是空白图片节点，拖入或双击上传；<b>提示词</b> 已写好并可在下方修改；运行 <b>API 出图</b> 节点即生成，结果汇入 <b>成果</b>。</div>
+        </div>
 
-    <div class="card prompt-card">
-      <div class="prompt-top">
-        <span class="detail-label">提示词 · 可编辑</span>
-        <span class="prompt-count" id="prompt-count"></span>
-      </div>
-      <textarea id="prompt" spellcheck="false"></textarea>
-      <div class="prompt-foot">
-        <span>第一张图 = 结构底图，第二张图 = 风格参考，连线顺序已固定</span>
-      </div>
-    </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="section-label"><i data-lucide="terminal" class="icon"></i><span>提示词 · 可编辑</span></div>
+            <span class="card-note" id="prompt-count"></span>
+          </div>
+          <textarea id="prompt" spellcheck="false"></textarea>
+          <div class="prompt-foot">
+            <span>第一张图 = 结构底图，第二张图 = 风格参考，连线顺序已固定；提示词改动会自动保存到当前模板。</span>
+          </div>
+        </div>
 
-    <div class="composer">
-      <input id="extra" placeholder="可选补充：项目类型、风格、光线时段、材质，例如：社区文化中心，清水混凝土与暖木，黄昏光">
-      <button class="primary-btn" id="btn-go"><span>生成画布</span><span class="arrow">→</span></button>
-    </div>
-    <div class="hint">
-      <span class="conn" id="conn"><i></i><span>检测中…</span></span>
-      <span id="model-note">正在读取模型配置…</span>
+        <div>
+          <div class="composer">
+            <input id="extra" placeholder="可选补充：项目类型、风格、光线时段、材质，例如：社区文化中心，清水混凝土与暖木，黄昏光">
+            <button class="primary-btn" id="btn-go"><i data-lucide="zap" class="icon"></i><span>生成画布</span></button>
+          </div>
+          <div class="hint" style="margin-top:12px">
+            <span class="conn" id="conn"><i></i><span>检测中…</span></span>
+            <span id="model-note">正在读取模型配置…</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card">
+          <div class="card-head">
+            <div class="section-label"><i data-lucide="sliders-horizontal" class="icon"></i><span>模板设置</span></div>
+            <span class="card-note">改动自动保存</span>
+          </div>
+          <div class="field-grid">
+            <label class="field full"><span>模板名称</span><input id="tpl-title" placeholder="例如：SU 轴测体块 → 鸟瞰效果图"></label>
+            <label class="field full"><span>模板描述</span><input id="tpl-desc" placeholder="一句话说明这个模板做什么"></label>
+            <label class="field"><span>输入说明</span><input id="tpl-input" placeholder="底图 + 参考图"></label>
+            <label class="field"><span>输出说明</span><input id="tpl-output" placeholder="效果图"></label>
+            <label class="field full"><span>画幅比例</span><select id="tpl-ratio"></select></label>
+            <label class="field"><span>① 底图节点名</span><input id="tpl-base" placeholder="① 底图 · 拖入结构底图"></label>
+            <label class="field"><span>② 参考图节点名</span><input id="tpl-ref" placeholder="② 参考图 · 拖入风格参考"></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="section-label"><i data-lucide="replace" class="icon"></i><span>关键词替换</span></div>
+            <span class="card-note">随模板保存</span>
+          </div>
+          <div class="kw-empty" id="kw-empty">把提示词里的词批量换掉，例如「鸟瞰 → 人视」「清晨 → 黄昏」「清水混凝土 → 红砖」。填好后点「应用到提示词」。</div>
+          <div id="kw-list"></div>
+          <div class="kw-actions">
+            <button class="chip-btn" id="btn-kw-add"><i data-lucide="plus" class="icon"></i>添加替换词</button>
+            <button class="chip-btn dark" id="btn-kw-apply"><i data-lucide="check" class="icon"></i>应用到提示词</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <div class="notice" id="notice"></div>
 
   <div class="footer">
-    <span>本地部署 · 素材不出内网</span>
+    <span>本地部署 · 模板保存在本机浏览器</span>
     <span>底图形体不被改变，参考图只控制风格</span>
-    <button class="text-btn" id="btn-list">画布列表</button>
+    <button class="link-btn" id="btn-list">画布列表</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="js/brief-workbench.js"></script>
+<script src="js/brief-workbench.js?v=2026.11.12.1.1794465000"></script>
 </body>
 </html>
