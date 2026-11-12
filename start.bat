@@ -40,6 +40,8 @@ set "CANVAS_PORT=%PORT%"
 
 echo Starting Infinite Canvas ...
 echo Visit: http://127.0.0.1:%PORT%/
+for /f "usebackq delims=" %%i in (`"%PYEXE%" "%~dp0tools\lan_ip.py"`) do set "LANIP=%%i"
+if defined LANIP if not "%LANIP%"=="127.0.0.1" echo Same Wi-Fi (phone/tablet): http://%LANIP%:%PORT%/
 echo Press Ctrl+C to stop.
 echo.
 

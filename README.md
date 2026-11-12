@@ -35,28 +35,46 @@ python3 main.py    # macOS / Linux（需先 pip3 install -r requirements.txt）
 
 无限画布是一款本地运行的 AI 创作画布工具，以 Python + FastAPI 为后端、原生前端为界面，支持调用各类 OpenAI 协议 API、ModelScope 免费模型等，把生成、编辑、整理、沉淀整合到一张无限画布上。
 
-## 画布预览
+## 界面预览
 
-一张无限画布，把「生成 → 编辑 → 整理 → 沉淀」串成一条流：节点自由摆放、连线组合，文生图 / 图生图 / 局部重绘 / 扩展出图 / 九宫格多视角都在画布上完成，生成结果随手沉淀进素材库。
+四个模块共用同一套侧栏：**自定义工作流 → 在线生图 → 无限画布 → 素材库**，生成、编辑、整理、沉淀串成一条流。
 
 > 以下为界面功能展示截图。
 
 <p align="center">
-  <img width="860" alt="无限画布总览" src="docs/screenshots/canvas-overview.png" />
+  <b>自定义工作流</b> · 四个内置模板可改标题、画幅、节点与提示词，支持关键词批量替换与另存
+  <br />
+  <img width="900" alt="自定义工作流界面" src="docs/screenshots/custom-workflow.png" />
 </p>
+
 <p align="center">
-  <img width="720" alt="在线生图界面" src="docs/screenshots/canvas-nodes.png" />
+  <b>在线生图</b> · 参考图 1-9 张自定义，每张带 IMAGE 编号，写 Prompt 时直接指代
+  <br />
+  <img width="900" alt="在线生图界面" src="docs/screenshots/online-studio.png" />
+</p>
+
+<p align="center">
+  <b>无限画布</b> · 节点自由摆放、连线组合，文生图 / 图生图 / 局部重绘 / 扩展出图 / 九宫格多视角
+  <br />
+  <img width="900" alt="无限画布界面" src="docs/screenshots/canvas-overview.png" />
+</p>
+
+<p align="center">
+  <b>素材库</b> · 分组管理、批量整理、智能分类，也可推送到在线平台
+  <br />
+  <img width="900" alt="素材库界面" src="docs/screenshots/asset-library.png" />
 </p>
 
 ## 功能特性
 
-1. 无限画布：节点式创作流，支持文生图 / 图生图 / 局部重绘 / 扩展出图 / 九宫格多视角等
-2. 在线生图：直连云端 API 生成
-3. 素材库：本地素材分组管理，支持 Chrome 批量采集插件、Photoshop 直连插件（tools 目录）
-4. API 设置：管理各平台地址、模型列表与 Key（Key 写入后端 env，页面不回显）
-5. 一键更新：从 GitHub 仓库自动下载新版本（更新前自动备份，可回滚）
-6. 支持几乎所有 OpenAI 协议的 API / 异步协议 / Gemini 协议 / 方钩协议
-7. 支持 ModelScope 免费 LLM 与图像模型调用
+1. 自定义工作流：四个内置模板可自行定制（标题、说明、画幅、节点名称、提示词），支持关键词批量替换、模板另存与还原
+2. 无限画布：节点式创作流，支持文生图 / 图生图 / 局部重绘 / 扩展出图 / 九宫格多视角等
+3. 在线生图：直连云端 API 生成，参考图片支持 1-9 张自定义并带 IMAGE 编号，写 Prompt 时可直接指代
+4. 素材库：本地素材分组管理，支持 Chrome 批量采集插件、Photoshop 直连插件（tools 目录）
+5. API 设置：管理各平台地址、模型列表与 Key（Key 写入后端 env，页面不回显）
+6. 一键更新：从 GitHub 仓库自动下载新版本（更新前自动备份，可回滚）
+7. 支持几乎所有 OpenAI 协议的 API / 异步协议 / Gemini 协议 / 方钩协议
+8. 支持 ModelScope 免费 LLM 与图像模型调用
 
 ## 快速开始
 
@@ -88,6 +106,21 @@ python3 main.py
 > macOS 首次运行如遇权限提示，请先执行 `mac-修复权限.command`。
 
 首次使用请进入「API 设置」配置可用的 API 平台与 Key，保存后即可在画布上调用 OpenAI 协议、ModelScope、火山引擎、即梦等平台的图像与对话能力。
+
+## 手机 / 平板访问
+
+程序默认监听 `0.0.0.0`，**同一个 Wi-Fi 下的手机、平板用浏览器就能打开**，无需安装任何 App：
+
+1. 电脑上双击 `start.bat`，控制台除了本机地址，还会打印一行
+   `Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/`
+2. iPad / iPhone 用 **Safari** 打开该地址；Android 用 **Chrome** 打开
+3. 浏览器菜单里选择「添加到主屏幕 / 安装应用」，即可全屏运行（已内置 Web App 清单、图标与深色状态栏）
+
+**边界说明**：
+
+- 数据、素材与 API Key 都存在这台电脑上，电脑关机或退出程序后手机 / 平板无法访问；跨网络访问需自建端口映射或内网穿透，请自行评估安全风险
+- 平板适合预览、在线生图、模板定制；画布的节点拖拽与双指缩放目前以鼠标 / 触控板为主，触屏手势仍在完善
+- 安卓端如需**完全离线（不依赖电脑）**，可在 Termux 里运行 `python main.py`（需自行安装依赖），原生 APK 需重写渲染层，暂不支持
 
 ## 配套工具
 

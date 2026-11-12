@@ -1735,7 +1735,9 @@ def versioned_static_html(html: str) -> str:
     if not version:
         return html
     safe_version = urllib.parse.quote(version, safe="._-")
-    pattern = re.compile(r'(?P<prefix>(?:src|href)=["\']|@import\s+url\(["\'])(?P<url>/static/[^"\')?#]+(?:\.(?:js|css|html)))(?:\?v=[^"\')#]*)?', re.I)
+    # (?![\w]) 必须保留：否则 /static/manifest.json 会被 ".js" 规则截成 manifest.js?v=…on，
+    # 导致 PWA 清单 404（同理可防止 .html.json 之类复合扩展名被误改）。
+    pattern = re.compile(r'(?P<prefix>(?:src|href)=["\']|@import\s+url\(["\'])(?P<url>/static/[^"\')?#]+\.(?:js|css|html))(?![\w])(?:\?v=[^"\')#]*)?', re.I)
     def replace(match):
         url = match.group("url")
         cache_version = safe_version
