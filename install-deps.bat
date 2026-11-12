@@ -8,7 +8,7 @@ set "NOPAUSE=%~1"
 
 if not "%NOPAUSE%"=="nopause" (
     echo ============================================
-    echo   Install Dependencies - Infinite Canvas UDG
+    echo   Install Dependencies - Infinite Canvas
     echo ============================================
     echo.
 )

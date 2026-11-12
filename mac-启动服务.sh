@@ -9,7 +9,7 @@ if [ -z "$LAN_IP" ]; then
 fi
 APP_URL="http://${LAN_IP}:3000/"
 
-echo "Starting Infinite Canvas UDG ..."
+echo "Starting Infinite Canvas ..."
 echo "Visit: ${APP_URL}"
 echo "Local: http://127.0.0.1:3000/"
 echo "Press Ctrl+C to stop."

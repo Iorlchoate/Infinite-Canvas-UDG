@@ -1,32 +1,27 @@
 {
-  "version": "2026.10.25.8",
-  "date": "2026-10-25",
-  "title": "推荐 API 面板显示品牌标识",
+  "version": "2026.11.12.1",
+  "date": "2026-11-12",
+  "title": "图标与界面细节更新",
   "changes": [
     {
       "type": "ui",
-      "scope": "推荐 API 面板",
-      "detail": "Fast AI、FHL、Agnes AI 三张推荐卡片的标题旁显示品牌标识，与左侧平台列表共用 static/images/brands 下的图片资源；方形 App 图标按圆角铺满，横版字标白底留白。"
-    },
-    {
-      "type": "feat",
-      "scope": "API 设置-平台列表",
-      "detail": "Fast AI 与 FHL 成为内置默认平台：首次运行即出现在左侧列表，Base URL、协议与推荐模型已预填，填入 Key 后即可调用；已有配置的用户在升级后自动补入一次，用户主动删除后不会被重新加回。"
+      "scope": "应用图标",
+      "detail": "启动图标、浏览器标签图标与侧栏图标统一更换为三层菱形图形标识。"
     },
     {
       "type": "ui",
-      "scope": "API 设置-平台列表",
-      "detail": "Fast AI、FHL、Agnes AI 三个推荐平台在左侧列表显示官方品牌标识，方形 App 图标按圆角铺满、横版字标按白底留白展示，明暗主题下均清晰可辨。"
+      "scope": "侧栏",
+      "detail": "精简顶部与底部元素，移除旧占位图标与动画，保留队列忙碌状态提示。"
     },
     {
-      "type": "feat",
-      "scope": "API 设置-推荐平台",
-      "detail": "推荐顺序为 Fast AI、FHL、Agnes AI，均可直接获取 API Key 并查看配置文档。"
+      "type": "docs",
+      "scope": "README 画布预览",
+      "detail": "界面截图替换为本版本实际运行画面（总览与节点画布特写）。"
     },
     {
       "type": "ui",
-      "scope": "左下角版本号",
-      "detail": "版本号常显并可点击，手动检查更新后可直接升级到最新版本。"
+      "scope": "界面文字",
+      "detail": "页面标题与说明文字精简统一。"
     }
   ]
 }

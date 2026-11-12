@@ -1,26 +1,22 @@
 {
-  "version": "2026.10.25.8",
-  "updated_at": "2026-10-25T21:40:00+08:00",
+  "version": "2026.11.12.1",
+  "updated_at": "2026-11-12T12:58:19+08:00",
   "items": [
     {
-      "type": "feature",
-      "text": "推荐 API 面板的 Fast AI、FHL、Agnes AI 卡片标题旁显示品牌标识，与左侧平台列表使用同一套图片。"
-    },
-    {
-      "type": "feature",
-      "text": "平台列表内置「Fast AI」与「FHL」：首次运行即出现，填入 Key 后即可调用，无需先手动添加。"
-    },
-    {
-      "type": "feature",
-      "text": "API 设置左侧平台列表：Fast AI、FHL、Agnes AI 显示官方品牌标识，其余平台保持通用图标。"
+      "type": "change",
+      "text": "启动图标、浏览器标签图标与侧栏图标统一更换为三层菱形图形标识。"
     },
     {
       "type": "change",
-      "text": "推荐 API 依次为「Fast AI」「FHL」「Agnes AI」，可直接获取 Key 与配置文档，已配置的平台继续可用。"
+      "text": "精简侧栏顶部与底部元素，移除旧占位图标与动画，保留队列忙碌状态提示。"
     },
     {
-      "type": "feature",
-      "text": "左下角版本号可点击，手动检查并升级到最新版本。"
+      "type": "change",
+      "text": "README 画布预览截图替换为本版本实际运行界面。"
+    },
+    {
+      "type": "change",
+      "text": "页面标题与说明文字精简统一。"
     }
   ]
 }

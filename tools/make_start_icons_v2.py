@@ -1,4 +1,4 @@
-"""START.BAT 图标方案（第二轮）：白底 + 白红相间，保留「圆角画布 + 联创红 #C8102E + UDG」基因。
+"""START.BAT 图标方案（第二轮）：白底 + 白红相间，保留「圆角画布 + 品牌红 #C8102E + 字标」基因。
 输出（项目根 icons/）：
   v2-preview-{a,b,c,d}.png   256px 预览
   v2-proposal-{a,b,c,d}.ico  多尺寸图标（16/24/32/48/64/128/256）
@@ -12,7 +12,7 @@ OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 os.makedirs(OUT, exist_ok=True)
 
 S = 1024
-RED = (200, 16, 46, 255)        # 联创红 #C8102E
+RED = (200, 16, 46, 255)        # 品牌红 #C8102E
 WHITE = (255, 255, 255, 255)
 HAIR = (228, 231, 236, 255)     # 白底在浅色资源管理器里的描边（极淡，仅定边）
 RADIUS = 0.225
@@ -67,11 +67,11 @@ def c():
                                     radius=int(cell * 0.26), fill=RED)
     return im
 
-# ---------- D UDG 徽标：白底 + 红色 UDG 字标 + 右下角红色播放键 ----------
+# ---------- D 字标徽标：白底 + 红色字标 + 右下角红色播放键 ----------
 def d():
     im = base(); dr = ImageDraw.Draw(im)
     f = ImageFont.truetype(FONT_BOLD, int(S * 0.235))
-    dr.text((S * 0.46, S * 0.455), "UDG", font=f, fill=RED, anchor="mm")
+    dr.text((S * 0.46, S * 0.455), "IC", font=f, fill=RED, anchor="mm")
     play(dr, S * 0.735, S * 0.70, S * 0.185, S * 0.21, RED)
     return im
 
@@ -79,7 +79,7 @@ PROPOSALS = [
     ("a", "A 红框播放键", a),
     ("b", "B 红玉白键", b),
     ("c", "C 像素汇聚", c),
-    ("d", "D UDG徽标", d),
+    ("d", "D 字标徽标", d),
 ]
 SIZES = [16, 24, 32, 48, 64, 128, 256]
 BG_LIGHT = (245, 246, 248, 255)

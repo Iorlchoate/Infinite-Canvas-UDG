@@ -1,4 +1,4 @@
-"""START.BAT 图标方案生成：4 个方向，沿用主程序「黑色圆角画布 + 联创红 #C8102E + UDG」视觉语言。
+"""START.BAT 图标方案生成：4 个方向，沿用主程序「黑色圆角画布 + 品牌红 #C8102E + 字标」视觉语言。
 输出（项目根 icons/ 目录）：
   proposal-{a,b,c,d}.ico   多尺寸图标（16/24/32/48/64/128/256）
   preview-{a,b,c,d}.png    256px 预览
@@ -13,7 +13,7 @@ os.makedirs(OUT, exist_ok=True)
 
 S = 1024                      # 超采样画布
 INK = (17, 17, 19, 255)       # 画布黑（比纯黑更耐看）
-RED = (200, 16, 46, 255)      # 联创红 #C8102E
+RED = (200, 16, 46, 255)      # 品牌红 #C8102E
 WHITE = (255, 255, 255, 255)
 RADIUS = 0.225                # 圆角比例，与 static/images/logo.png 的 squircle 一致
 FONT_BOLD = "C:/Windows/Fonts/arialbd.ttf"
@@ -41,13 +41,13 @@ def proposal_a():
     play_triangle(d, S * 0.60, S * 0.5, S * 0.26, S * 0.30, RED)
     return im
 
-# ---------- 方案 B：UDG 品牌徽标（联创红底 + 白字，对应左下角徽标） ----------
+# ---------- 方案 B：字标徽标（品牌红底 + 白字） ----------
 def proposal_b():
     im = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     squircle(im, RED)
     d = ImageDraw.Draw(im)
     f = ImageFont.truetype(FONT_BOLD, int(S * 0.30))
-    d.text((S * 0.5, S * 0.5), "UDG", font=f, fill=WHITE, anchor="mm")
+    d.text((S * 0.5, S * 0.5), "IC", font=f, fill=WHITE, anchor="mm")
     return im
 
 # ---------- 方案 C：像素画布（黑底 + 2x2 像素格，右下格点红） ----------
@@ -81,7 +81,7 @@ def proposal_d():
 
 PROPOSALS = [
     ("a", "A 画布启动键", proposal_a),
-    ("b", "B UDG徽标", proposal_b),
+    ("b", "B 字标徽标", proposal_b),
     ("c", "C 像素画布", proposal_c),
     ("d", "D 画框启动", proposal_d),
 ]

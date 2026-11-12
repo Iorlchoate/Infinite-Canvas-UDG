@@ -1,6 +1,6 @@
-# 无限画布 · Infinite Canvas（UDG 版）
+# 无限画布 · Infinite Canvas
 
-**联创四院（UDG）** 基于开源项目 [Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) 二次开发的画布软件。
+基于开源项目 [Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) 二次开发的本地 AI 创作画布工具。
 
 - 项目主页：<https://github.com/iorlchotae/Infinite-Canvas-UDG>
 - **下载安装**：见下方 [⬇️ 下载与安装](#️-下载与安装)（免安装绿色包，解压即用）
@@ -33,19 +33,19 @@ python3 main.py    # macOS / Linux（需先 pip3 install -r requirements.txt）
 
 ## 项目简介
 
-无限画布（UDG 版）是一款本地运行的 AI 创作画布工具，以 Python + FastAPI 为后端、原生前端为界面，支持调用各类 OpenAI 协议 API、ModelScope 免费模型等，把生成、编辑、整理、沉淀整合到一张无限画布上。
+无限画布是一款本地运行的 AI 创作画布工具，以 Python + FastAPI 为后端、原生前端为界面，支持调用各类 OpenAI 协议 API、ModelScope 免费模型等，把生成、编辑、整理、沉淀整合到一张无限画布上。
 
 ## 画布预览
 
 一张无限画布，把「生成 → 编辑 → 整理 → 沉淀」串成一条流：节点自由摆放、连线组合，文生图 / 图生图 / 局部重绘 / 扩展出图 / 九宫格多视角都在画布上完成，生成结果随手沉淀进素材库。
 
-> 界面截图取自开源项目 [Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas)（原作者 wuli大雄），仅作界面示意；UDG 版界面署名为「联创四院 / UDG」。
+> 以下为界面功能展示截图。
 
 <p align="center">
-  <img width="860" alt="无限画布总览" src="https://github.com/user-attachments/assets/8469923b-f7a2-403c-9c37-e6e789211f28" />
+  <img width="860" alt="无限画布总览" src="docs/screenshots/canvas-overview.png" />
 </p>
 <p align="center">
-  <img width="720" alt="画布节点创作" src="https://github.com/user-attachments/assets/f4030201-67c6-4845-b08b-b6fdf304afaa" />
+  <img width="720" alt="在线生图界面" src="docs/screenshots/canvas-nodes.png" />
 </p>
 
 ## 功能特性
@@ -111,7 +111,7 @@ python tools/make_release_zip.py
 
 **特别致谢**：感谢原创作者 **wuli大雄** 开发并开源了 Infinite-Canvas，为本项目提供了全部基础代码。原项目已申请著作权，其开源约定（二次开发须保持开源并注明来源作者、禁止擅自商用封装）对上游代码继续适用，本项目同样保持开源并注明来源。
 
-UDG 版在此基础上聚焦画布体验，界面署名为「联创四院 / UDG」，项目主页与在线更新均指向本仓库。
+本项目在此基础上聚焦画布体验，项目主页与在线更新均指向本仓库。
 
 ### 上游项目
 

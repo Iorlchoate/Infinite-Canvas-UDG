@@ -1,6 +1,6 @@
 """一键打包 START.exe（内嵌图标）。用法：
   python tools/build_start_exe.py [图标ico] [输出exe名]
-默认：图标 icons/v2-proposal-b.ico，输出 START.exe 到项目根目录。
+默认：图标 icons/final-start.ico（应用图标），输出 START.exe 到项目根目录。
 依赖 PyInstaller（装在隔离环境 iconbuild 里，不污染项目自带 python）。
 """
 import os
@@ -14,7 +14,7 @@ BUILD = os.path.join(ROOT, ".build_pyi")
 
 
 def main():
-    icon = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "icons", "v2-proposal-b.ico")
+    icon = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "icons", "final-start.ico")
     out_name = sys.argv[2] if len(sys.argv) > 2 else "START.exe"
     # PyInstaller 会把自己切到 workpath，相对路径会失效，必须转绝对路径
     icon = os.path.abspath(icon)

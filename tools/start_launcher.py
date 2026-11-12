@@ -22,7 +22,7 @@ def main():
             ctypes.windll.user32.MessageBoxW(
                 0,
                 "未找到 start.bat，请把 START.exe 与 start.bat 放在同一目录。\n\n路径：%s" % bat,
-                "无限画布-联创四院",
+                "无限画布",
                 0x10,
             )
         except Exception:

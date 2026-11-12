@@ -86,12 +86,12 @@ body.studio-theme-dark .nav-item.active {
 
 html.studio-theme-dark body .logo-ring,
 body.studio-theme-dark .logo-ring {
-    border-color: #d8dee9 !important;
+    border-color: transparent !important;
 }
 
-html.studio-theme-dark body #logo-dot,
-body.studio-theme-dark #logo-dot {
-    background: #d8dee9 !important;
+html.studio-theme-dark body .logo-ring::after,
+body.studio-theme-dark .logo-ring::after {
+    border-color: #10141d !important;
 }
 
 html.studio-theme-dark body .nano-monitor,

@@ -38,7 +38,7 @@ if exist "%PORTFILE%" set /p PORT=<"%PORTFILE%"
 del "%PORTFILE%" >nul 2>&1
 set "CANVAS_PORT=%PORT%"
 
-echo Starting Infinite Canvas UDG ...
+echo Starting Infinite Canvas ...
 echo Visit: http://127.0.0.1:%PORT%/
 echo Press Ctrl+C to stop.
 echo.

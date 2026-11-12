@@ -13,6 +13,7 @@ data/projects.json
 data/prompt_libraries.json
 data/api_providers.json
 data/recommended_providers_seed.json
+assets/
 
 # Packaged launcher (rebuild with tools/build_start_exe.py, 8MB binary)
 START.exe
@@ -23,3 +24,4 @@ START.exe
 
 # Release 打包产物 (tools/make_release_zip.py 输出)
 dist/
+
