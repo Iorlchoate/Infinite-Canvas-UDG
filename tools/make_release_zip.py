@@ -17,6 +17,9 @@ import subprocess
 import sys
 import zipfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from publish_guard import assert_clean, reason  # noqa: E402
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -45,16 +48,15 @@ def tracked_files() -> list[str]:
         print("git 不可用，改用目录遍历（可能多收运行数据）", file=sys.stderr)
 
     # git 不可用时的兜底遍历：宁可少收，也不能把用户数据 / 密钥打进发布包。
-    # data/ 全部是运行时状态（含种子标记，程序会自动生成），整目录排除。
-    skip_dirs = {".git", "__pycache__", ".build_pyi", "dist", "assets", "data", "output", "logs"}
-    skip_files = {".env", "history.json", "API/.env"}
+    # 判定规则与 publish_guard.py 保持单一来源，避免两条链路规则漂移。
+    skip_dirs = {".git", "__pycache__", ".build_pyi", "dist"}
     result: list[str] = []
     for root, dirs, names in os.walk(BASE_DIR):
         dirs[:] = [d for d in dirs if d not in skip_dirs]
         rel_root = os.path.relpath(root, BASE_DIR).replace("\\", "/")
         for name in names:
             rel = name if rel_root == "." else f"{rel_root}/{name}"
-            if rel in skip_files or name == ".env" or name.endswith(".pyc"):
+            if reason(rel):
                 continue
             result.append(rel)
     return result
@@ -63,6 +65,8 @@ def tracked_files() -> list[str]:
 def make_zip(output: str) -> tuple[int, int]:
     version = read_version()
     files = tracked_files()
+    count_ok = assert_clean(files)
+    print(f"发布安全校验：通过（{count_ok} 个文件，0 个敏感/运行时项）")
     root = f"Infinite-Canvas-UDG-{version}"
     os.makedirs(os.path.dirname(output) or ".", exist_ok=True)
 

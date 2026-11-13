@@ -1,0 +1,131 @@
+/* ============================================================
+ * touch-responsive.css — 平板 / 触屏适配补充层
+ *
+ * 由 static/*.html 在最后一个样式表之后引入。
+ * 所有规则都包在 max-width / hover:none 媒体查询里：
+ * 桌面（>1024px 且有 hover）完全不受影响。
+ * 各页面原有 CSS 的断点保持不变，这里只补齐 iPad 竖屏、
+ * 动态视口高度与触屏交互的缺口。
+ * ============================================================ */
+
+/* ---------- 小屏通用：<=1024px ---------- */
+@media (max-width: 1024px) {
+    html, body {
+        max-width: 100%;
+        overflow-x: hidden;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    /* iPad Safari 的 100vh 含地址栏，底部会被遮住；dvh 才是可视高度 */
+    body, .app-shell, .sidebar {
+        height: 100dvh;
+        max-height: 100dvh;
+    }
+
+    /* 主框架收紧留白，把宽度让给内容 */
+    .stage {
+        margin: 10px !important;
+        border-radius: 20px !important;
+    }
+    .sidebar { padding: 20px 0 !important; }
+
+    /* 弹窗与浮层不得超出屏幕 */
+    .studio-modal-panel {
+        max-width: calc(100vw - 24px);
+        max-height: calc(100dvh - 24px);
+    }
+    .prompt-template-panel,
+    .workflow-transfer-panel {
+        max-width: calc(100vw - 24px);
+        max-height: calc(100dvh - 96px);
+    }
+    .prompt-template-body {
+        grid-template-columns: 1fr;
+        overflow: auto;
+    }
+}
+
+/* ---------- iPad 竖屏：768~1024 ---------- */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .stage { margin: 12px !important; }
+
+    /* 侧栏展开后仍要给舞台留下足够宽度 */
+    .sidebar.is-pinned { width: 200px; min-width: 200px; }
+    .sidebar.is-pinned .nav-item { width: 176px; }
+    .sidebar.is-pinned .side-pill,
+    .sidebar.is-pinned .project-version-badge,
+    .sidebar.is-pinned .update-now-btn { width: 160px; }
+}
+
+/* ---------- 手机竖屏：<768px ---------- */
+@media (max-width: 767px) {
+    .stage {
+        margin: 6px !important;
+        border-radius: 14px !important;
+    }
+
+    /* 窄屏一律用图标模式，避免侧栏吃掉一半屏幕 */
+    .sidebar,
+    .sidebar.is-pinned {
+        width: 64px !important;
+        min-width: 64px !important;
+        padding: 14px 0 !important;
+    }
+    .sidebar.is-pinned .nav-item,
+    .sidebar.is-pinned .side-pill,
+    .sidebar.is-pinned .project-version-badge,
+    .sidebar.is-pinned .update-now-btn { width: 52px !important; }
+    .sidebar .nav-text,
+    .sidebar.is-pinned .nav-text,
+    .sidebar .side-pill-text,
+    .sidebar.is-pinned .side-pill-text,
+    .sidebar.is-pinned .project-version-full,
+    .sidebar.is-pinned .update-version-full,
+    .sidebar.is-pinned .update-action-prefix,
+    .sidebar.is-pinned .update-now-text {
+        display: none !important;
+        opacity: 0 !important;
+    }
+    .sidebar.is-pinned .project-version-compact,
+    .sidebar.is-pinned .update-version-compact { display: inline !important; }
+    .logo-ring, .brand-logo-img {
+        width: 34px !important;
+        height: 34px !important;
+    }
+    .studio-modal { align-items: flex-end; padding: 10px; }
+}
+
+/* ---------- 触屏设备（无 hover） ---------- */
+@media (hover: none) and (pointer: coarse) {
+    /* 触屏没有 hover，侧栏不会自动展开。默认改为「图标 + 短标签」，
+       宽度只占 92px，菜单含义一眼可见，同时把宽度留给内容区。 */
+    .sidebar:not(.is-pinned) { width: 150px; min-width: 150px; }
+    .sidebar:not(.is-pinned) .nav-item { width: 130px; }
+    .sidebar:not(.is-pinned) .nav-text {
+        opacity: 1;
+        margin-left: 10px;
+        max-width: 96px;
+        font-size: 11px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .sidebar:not(.is-pinned) .side-pill { width: 130px; }
+    .sidebar:not(.is-pinned) .side-pill-text { opacity: 1; max-width: 96px; }
+    /* 用户主动点击 LOGO 展开时，仍走 .is-pinned 的横向菜单规则 */
+    .sidebar {
+        transition: width .25s ease, background .3s, border-color .3s;
+    }
+    .nav-item { min-height: 44px; }
+    .asset-btn,
+    .asset-tabs button,
+    .ws-topbar button { min-height: 40px; }
+    .app-shell { touch-action: pan-y; }
+    iframe { -webkit-overflow-scrolling: touch; }
+}
+
+/* ---------- 横屏矮视口（手机横屏 / 分屏） ---------- */
+@media (max-height: 500px) and (max-width: 1024px) {
+    .sidebar { padding: 10px 0 !important; }
+    .stage { margin: 6px !important; border-radius: 12px !important; }
+}

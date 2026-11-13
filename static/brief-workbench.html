@@ -156,7 +156,37 @@ h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:it
   background:var(--accent);color:var(--accent-ink);padding:11px 20px;border-radius:999px;
   font-size:11.5px;font-weight:700;box-shadow:0 12px 28px rgba(0,0,0,.16);opacity:0;pointer-events:none;transition:.2s;z-index:50}
 .toast.show{opacity:1;transform:translateX(-50%)}
+/* 窄屏适配：iframe 内宽度有限，避免顶栏与内容横向溢出（页面专属规则） */
+@media(max-width:1024px){
+  .topbar{padding:0 24px}
+  .wrap{padding:0 24px 32px}
+}
+@media(max-width:767px){
+  .topbar{height:auto;min-height:56px;padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .brandline{gap:8px;min-width:0}
+  .brand-sep,.brand-sub{display:none}
+  .topbar-right{flex-wrap:wrap;gap:6px}
+  .wrap{padding:0 14px 24px}
+  .hero{padding:22px 0 16px}
+  .eyebrow{font-size:9px;letter-spacing:.16em;margin-bottom:8px}
+  h1{font-size:30px}
+  .hero p{font-size:11.5px;max-width:100%}
+  .wf-card{padding:14px;min-height:0}
+  .card{padding:14px}
+  #extra{min-width:0;width:100%}
+  .tpl-bar{gap:8px}
+  .chip-btn{padding:0 10px;font-size:10px}
+  /* 彻底消除 iframe 内横向溢出：统一盒模型 + 容器限宽 + 按钮可换行 */
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  *,*::before,*::after{box-sizing:border-box}
+  .topbar,.wrap,.tpl-bar,.tpl-actions,.topbar-right,.wf-card,.card,#prompt,#extra{max-width:100%}
+  .topbar-right{min-width:0}
+  .tpl-bar{flex-direction:column;align-items:stretch}
+  .tpl-actions{width:100%;flex-wrap:wrap}
+  .outline-btn,.link-btn{padding:0 10px;font-size:10px}
+}
 </style>
+    <link rel="stylesheet" href="/static/css/touch-responsive.css">
 </head>
 <body>
 

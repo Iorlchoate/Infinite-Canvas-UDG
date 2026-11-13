@@ -127,6 +127,8 @@ python3 main.py
 - `tools/chrome-local-asset-importer`：Chrome 插件，扫描网页图片批量导入素材库
 - `tools/photoshop-asset-connector`：Photoshop UXP 面板插件，PS 与素材库双向打通
 - `tools/make_release_zip.py`：发布打包脚本，生成给用户下载的免安装 zip（见下）
+- `tools/make_release_dir.py`：生成「纯净可分发目录」，供文件夹形式分发（内网共享 / 移动硬盘 / 网盘）
+- `tools/publish_guard.py`：发布安全规则，打包与目录分发共用同一套判定
 
 ### 发布打包（维护者）
 
@@ -134,7 +136,16 @@ python3 main.py
 python tools/make_release_zip.py
 # 输出 dist/Infinite-Canvas-UDG-<版本>-win.zip（约 50 MB，只收录 git 跟踪文件，
 # 自动排除 .git、API/.env 密钥、素材与画布运行数据）
+
+python tools/make_release_dir.py
+# 输出 dist/Infinite-Canvas-UDG-<版本>-publish/，内容与 zip 一致，可直接整体拷贝分发
+# 目标可自定义（含 UNC 内网路径）：--output "\\服务器\共享\Infinite-Canvas-UDG-..."
+
+python tools/make_release_dir.py --check "D:\待发布目录"
+# 发布前复查任意目录；发现敏感项会以非零退出码报错
 ```
+
+> **不要直接复制正在运行的工作目录对外发布。** 运行目录会不断产生 `API/.env`（密钥）、`history.json`（生成历史）、`assets/` 用户素材、`data/` 画布与配置、`output/`、`logs/` 等数据。打包脚本与目录生成脚本都会通过 `publish_guard.py` 做硬校验，发现这些内容直接失败，不会静默放过去。需要分发时只用上面两个命令产出的 zip / `-publish` 目录。
 
 把 zip 上传到 [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases)（`gh release create <版本号> dist/*.zip`）即可供用户在 README 顶部入口下载；上传前用 `gh release view` 或网页检查附件名称与 README 中的说明一致。
 
