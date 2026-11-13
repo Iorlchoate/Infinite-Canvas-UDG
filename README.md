@@ -72,7 +72,7 @@ python3 main.py    # macOS / Linux（需先 pip3 install -r requirements.txt）
 3. 在线生图：直连云端 API 生成，参考图片支持 1-9 张自定义并带 IMAGE 编号，写 Prompt 时可直接指代
 4. 素材库：本地素材分组管理，支持 Chrome 批量采集插件、Photoshop 直连插件（tools 目录）
 5. API 设置：管理各平台地址、模型列表与 Key（Key 写入后端 env，页面不回显）
-6. 一键更新：从 GitHub 仓库自动下载新版本（更新前自动备份，可回滚）
+6. 一键更新：从 GitHub 仓库自动下载新版本（更新前自动备份，可回滚）。**已安装旧版本的用户直接在界面点「一键更新」即可同步**，无需重新下载安装包：程序读取仓库 `VERSION` 判断新版本，自动覆盖 `main.py`、`VERSION` 与全部 `static` 页面，完成后自动重启
 7. 支持几乎所有 OpenAI 协议的 API / 异步协议 / Gemini 协议 / 方钩协议
 8. 支持 ModelScope 免费 LLM 与图像模型调用
 
