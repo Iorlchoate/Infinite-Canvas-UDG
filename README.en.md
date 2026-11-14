@@ -85,7 +85,6 @@ The app only talks to the API endpoint you configure, and only when you explicit
 - **Canvas alignment guides**: 7 px screen-space snapping while dragging / resizing, blue dashed guides, `Ctrl / ⌘` to suspend
 - **Group containers**: 52 px header, auto-fit, aspect-ratio grid tidy, double-click rename, floating toolbar (download / long-image merge / ungroup)
 - **Large-canvas viewport culling**: at 60+ nodes only nearby cards are mounted; a 300-node canvas mounts 3 cards on first paint, then mounts incrementally while panning
-- Full reverse-engineering notes: [DX OS canvas research](docs/canvas-alignment-and-grouping-research.md)
 
 ## Who it is for
 

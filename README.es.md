@@ -85,7 +85,6 @@ La aplicación solo contacta con la API que configures, y solo cuando llamas exp
 - **Guías de alineación**: imán de 7 px al arrastrar / redimensionar, guías azules discontinuas, `Ctrl / ⌘` para suspenderlas
 - **Contenedores de grupo**: cabecera de 52 px, ajuste automático, orden en cuadrícula según proporción, renombrar con doble clic, barra flotante (descargar / unir en imagen larga / desagrupar)
 - **Culling del lienzo**: a partir de 60 nodos solo se montan las tarjetas cercanas; un lienzo de 300 nodos monta 3 tarjetas en el primer render y las añade al desplazarse
-- Notas de ingeniería inversa: [Investigación del lienzo de DX OS](docs/canvas-alignment-and-grouping-research.md)
 
 ## Para quién
 

@@ -85,7 +85,6 @@ L'application ne contacte que l'API que vous configurez, et uniquement lorsque v
 - **Repères d'alignement** : aimantation à 7 px lors du déplacement / redimensionnement, guides bleus en pointillés, `Ctrl / ⌘` pour suspendre
 - **Conteneurs de groupe** : en-tête de 52 px, ajustement automatique, rangement en grille selon le ratio, renommage par double-clic, barre flottante (télécharger / fusionner en image longue / dissocier)
 - **Culling de la toile** : à partir de 60 nœuds, seules les cartes proches sont montées ; une toile de 300 nœuds monte 3 cartes au premier rendu, puis les ajoute pendant le déplacement
-- Notes de reverse-engineering : [Recherche sur la toile DX OS](docs/canvas-alignment-and-grouping-research.md)
 
 ## Pour qui ?
 
