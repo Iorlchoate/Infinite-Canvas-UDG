@@ -259,6 +259,8 @@
     if (!f) return;
     $('d-title').textContent = f.title;
     $('d-desc').textContent = f.input + '  →  ' + f.output + ' · 严格保持底图形体，参考图只控制风格';
+    const genTemplate = $('gen-template');
+    if (genTemplate) genTemplate.textContent = f.title;
   }
 
   function renderDetail() {

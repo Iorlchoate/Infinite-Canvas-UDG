@@ -357,6 +357,12 @@ const GROUP_HEAD = 52;
 const GROUP_GAP = 16;
 const GROUP_MIN_W = 280;
 const GROUP_MIN_H = 180;
+// 大画布视口裁剪：节点数达到阈值后，只把视口附近的卡片挂进 DOM。
+// 小画布继续全量渲染，避免为了性能引入不必要的复杂度。
+const CULL_MIN_NODES = 60;
+const CULL_MARGIN_PX = 700;
+let viewportNodeSyncQueued = false;
+let mountedVisibleNodeIds = new Set();
 const snapGuidesEl = document.getElementById('snapGuides');
 const snapGuideVEl = document.getElementById('snapGuideV');
 const snapGuideHEl = document.getElementById('snapGuideH');
@@ -1131,10 +1137,100 @@ function screenToWorld(clientX, clientY){
 }
 function applyViewport(){
     world.style.transform = `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.scale})`;
+    if(typeof cullActive === 'function' && cullActive()) scheduleViewportNodeSync();
     scheduleMinimapRender();
     scheduleCanvasImageResolutionSync(nodesEl, 120);
 }
+function fastNodeRect(n){
+    const size = defaultNodeSize(n.type);
+    const w = Number(n.w) || size.w || 260;
+    let h = Number(n.h) || size.h;
+    if(!h) h = n.type === 'image' ? 336 : 240;
+    return {x:Number(n.x) || 0, y:Number(n.y) || 0, w, h};
+}
+function cullActive(){
+    return nodes.length >= CULL_MIN_NODES;
+}
+function visibleWorldViewRect(marginPx = CULL_MARGIN_PX){
+    const rect = board.getBoundingClientRect();
+    const scale = Math.max(0.001, viewport.scale || 1);
+    const margin = Math.max(0, marginPx) / scale;
+    return {
+        x: -viewport.x / scale - margin,
+        y: -viewport.y / scale - margin,
+        w: rect.width / scale + margin * 2,
+        h: rect.height / scale + margin * 2
+    };
+}
+function currentVisibleNodeIds(){
+    if(!cullActive()) return new Set(nodes.map(n => n.id));
+    const view = visibleWorldViewRect();
+    const ids = new Set();
+    nodes.forEach(node => {
+        const r = fastNodeRect(node);
+        if(r.x < view.x + view.w && r.x + r.w > view.x && r.y < view.y + view.h && r.y + r.h > view.y){
+            ids.add(node.id);
+        }
+    });
+    // 选中、正在运行、正在拖拽的节点始终保留，避免操作中断。
+    selected.forEach(id => ids.add(id));
+    nodes.forEach(node => {
+        if(node.runStatus === 'running' || node.runStatus === 'queued') ids.add(node.id);
+        if(node.type === 'output' && (node._pending || []).length) ids.add(node.id);
+    });
+    if(dragNode?.node) ids.add(dragNode.node.id);
+    (dragNode?.children || []).forEach(child => ids.add(child.node.id));
+    if(resizeNode?.node) ids.add(resizeNode.node.id);
+    // 子项可见时，父分组框也要挂载；选中的分组则把子项一起挂载，保证整理/适配读到真实尺寸。
+    nodes.forEach(group => {
+        if(group.type !== 'group') return;
+        if((group.items || []).some(id => ids.has(id))) ids.add(group.id);
+        if(selected.has(group.id)) (group.items || []).forEach(id => ids.add(id));
+    });
+    return ids;
+}
+function scheduleViewportNodeSync(){
+    if(viewportNodeSyncQueued) return;
+    viewportNodeSyncQueued = true;
+    requestAnimationFrame(() => {
+        viewportNodeSyncQueued = false;
+        syncViewportNodes();
+    });
+}
+function syncViewportNodes(){
+    if(!cullActive() || !nodesEl) return;
+    const visible = currentVisibleNodeIds();
+    const existing = new Map();
+    [...nodesEl.children].forEach(el => {
+        if(el.dataset?.id) existing.set(el.dataset.id, el);
+    });
+    let changed = false;
+    existing.forEach((el, id) => {
+        if(!visible.has(id)){
+            el.remove();
+            changed = true;
+        }
+    });
+    nodes.forEach(node => {
+        if(!visible.has(node.id) || existing.has(node.id)) return;
+        try {
+            nodesEl.appendChild(renderNode(node));
+            changed = true;
+        } catch(err) {
+            console.error('[canvas] 视口挂载节点失败：', node?.id, node?.type, err);
+        }
+    });
+    mountedVisibleNodeIds = visible;
+    if(changed){
+        refreshIcons();
+        bindCanvasPreviewImageFallbacks(nodesEl);
+        syncCanvasSelectedImageResolution(nodesEl);
+    }
+    renderLinks();
+    renderSelectionHub();
+}
 function estimatedNodeRect(n){
+    if(cullActive()) return fastNodeRect(n);
     const el = nodesEl?.querySelector?.(`.node[data-id="${CSS.escape(n.id)}"]`);
     const size = defaultNodeSize(n.type);
     const w = el?.offsetWidth || n.w || size.w || 260;
@@ -5616,11 +5712,14 @@ function render(){
         const node = nodes.find(n => n.id === el.dataset.id);
         if(nodeHasLiveMedia(node)) reusableMediaNodes.set(node.id, el);
     });
+    const visible = currentVisibleNodeIds();
     applyViewport();
     [...nodesEl.children].forEach(child => {
-        if(!reusableMediaNodes.has(child.dataset?.id)) child.remove();
+        const id = child.dataset?.id;
+        if(!visible.has(id) || !reusableMediaNodes.has(id)) child.remove();
     });
     nodes.forEach(node => {
+        if(!visible.has(node.id)) return;
         // 单个节点渲染异常不能中断整个循环，否则它后面的节点（含新建节点，通常排在末尾）都不会被
         // 追加进 DOM，连带这些节点的连线也会因找不到 DOM 而画到 (0,0) 变成“消失”。
         try {
@@ -5635,6 +5734,7 @@ function render(){
             console.error('[canvas] renderNode 失败，已跳过该节点：', node?.id, node?.type, err);
         }
     });
+    mountedVisibleNodeIds = visible;
     restoreMediaPlaybackStates(mediaStates);
     restoreOutputScrolls(outputScrolls);
     refreshGeometry();
@@ -5656,6 +5756,7 @@ function refreshNodes(ids=[]){
         if(node.type === 'output' && refreshOutputNodeContent(node)) continue;
         const current = nodesEl.querySelector(`.node[data-id="${CSS.escape(id)}"]`);
         if(!current){
+            if(cullActive() && !mountedVisibleNodeIds.has(id)) continue;
             render();
             return;
         }

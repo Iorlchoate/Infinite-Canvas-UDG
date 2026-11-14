@@ -380,7 +380,7 @@ function renderBoard(){
     autoLayoutNulls(items);
     boardWorld.innerHTML = '';
     items.forEach(c => boardWorld.appendChild(buildCard(c)));
-    boardEmptyHint.classList.toggle('hidden', items.length > 0);
+    boardEmptyHint.classList.toggle('hidden', items.length > 0 || Boolean(createCardEl));
     updatePasteBtn();
     refreshIcons();
 }
@@ -474,7 +474,16 @@ function openCanvas(c){
 /* ===== Card create flow ===== */
 let createCardEl = null;
 let createKind = 'classic';
-function closeCreateCard(){ createCardEl?.remove(); createCardEl = null; }
+function syncCreateEmptyHint(){
+    if(!boardEmptyHint) return;
+    const hasItems = canvasesInProject(currentProjectId).length > 0;
+    boardEmptyHint.classList.toggle('hidden', Boolean(createCardEl) || hasItems);
+}
+function closeCreateCard(){
+    createCardEl?.remove();
+    createCardEl = null;
+    syncCreateEmptyHint();
+}
 function openCreateCard(worldPt){
     closeCreateCard();
     closeCardMenu();
@@ -496,6 +505,7 @@ function openCreateCard(worldPt){
         </div>`;
     boardWorld.appendChild(el);
     createCardEl = el;
+    syncCreateEmptyHint();
     el.addEventListener('mousedown', e => e.stopPropagation());
     const input = el.querySelector('.ws-create-input');
     input.focus();

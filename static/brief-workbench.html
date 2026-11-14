@@ -89,6 +89,30 @@ h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:it
 .detail-head h2{margin:0 0 4px;font-size:20px;font-weight:800;letter-spacing:-.02em}
 .detail-head p{margin:0;font-size:11.5px;color:var(--ink-2)}
 .detail-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* 生成操作条：放在模板标题下方并吸顶，选中模板后随时可以生成，不用滚到页尾 */
+.generate-bar{position:sticky;top:72px;z-index:18;display:flex;align-items:center;gap:14px;
+  padding:12px 14px;margin:0 0 10px;border:1px solid var(--line-strong);border-radius:20px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(16px) saturate(1.02);
+  box-shadow:0 14px 34px rgba(15,23,42,.08)}
+.generate-meta{display:flex;flex-direction:column;gap:1px;min-width:180px;max-width:300px;flex:0 1 300px}
+.generate-meta small{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.generate-meta strong{font-size:13px;font-weight:800;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.generate-meta>span{font-size:10px;color:var(--ink-2);line-height:1.5}
+.generate-bar #extra{flex:1 1 240px;min-width:180px;height:46px;border:1px solid var(--line-strong);
+  border-radius:14px;background:var(--card);padding:0 14px;font-size:12px;outline:none;transition:.2s var(--easing)}
+.generate-bar #extra:focus{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.generate-bar .primary-btn{height:52px;min-width:168px;flex:0 0 auto;padding:0 30px;border-radius:14px;
+  font-size:13px;font-weight:850;letter-spacing:.02em;text-transform:none;gap:9px;
+  box-shadow:0 10px 22px rgba(17,24,39,.16)}
+.generate-bar .primary-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 28px rgba(17,24,39,.2)}
+.generate-status{margin:0 2px 16px}
+.theme-dark .generate-bar{background:rgba(27,32,41,.92);border-color:var(--line-strong);box-shadow:0 14px 34px rgba(0,0,0,.28)}
+@media(max-width:767px){
+  .generate-bar{position:static;flex-wrap:wrap;padding:12px;gap:10px}
+  .generate-meta{flex:1 1 100%;max-width:none}
+  .generate-bar #extra{flex:1 1 100%;width:100%}
+  .generate-bar .primary-btn{width:100%}
+}
 .detail-grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
 @media(min-width:1024px){.detail-grid{grid-template-columns:1.12fr .88fr}}
 .col{display:flex;flex-direction:column;gap:16px;min-width:0}
@@ -234,6 +258,20 @@ h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:it
       </div>
     </div>
 
+    <div class="generate-bar" id="generate-bar">
+      <div class="generate-meta">
+        <small>当前模板 · 选好即可生成</small>
+        <strong id="gen-template">—</strong>
+        <span>生成后进入画布，拖入底图与参考图即可运行</span>
+      </div>
+      <input id="extra" placeholder="可选补充：项目类型、风格、光线时段、材质…">
+      <button class="primary-btn" id="btn-go" type="button" title="用当前模板生成画布"><i data-lucide="zap" class="icon"></i><span>生成画布</span></button>
+    </div>
+    <div class="hint generate-status">
+      <span class="conn" id="conn"><i></i><span>检测中…</span></span>
+      <span id="model-note">正在读取模型配置…</span>
+    </div>
+
     <div class="detail-grid">
       <div class="col">
         <div class="card">
@@ -253,17 +291,6 @@ h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:it
           <textarea id="prompt" spellcheck="false"></textarea>
           <div class="prompt-foot">
             <span>第一张图 = 结构底图，第二张图 = 风格参考，连线顺序已固定；提示词改动会自动保存到当前模板。</span>
-          </div>
-        </div>
-
-        <div>
-          <div class="composer">
-            <input id="extra" placeholder="可选补充：项目类型、风格、光线时段、材质，例如：社区文化中心，清水混凝土与暖木，黄昏光">
-            <button class="primary-btn" id="btn-go"><i data-lucide="zap" class="icon"></i><span>生成画布</span></button>
-          </div>
-          <div class="hint" style="margin-top:12px">
-            <span class="conn" id="conn"><i></i><span>检测中…</span></span>
-            <span id="model-note">正在读取模型配置…</span>
           </div>
         </div>
       </div>
