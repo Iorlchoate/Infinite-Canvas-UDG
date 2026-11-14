@@ -76,9 +76,9 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 
 ## 界面预览
 
-| 无限画布 · 工作流 | 在线生图 | 素材库 |
+| 自定义工作流 | 在线生图 | 素材库 |
 | --- | --- | --- |
-| ![无限画布工作流](docs/screenshots/canvas-workflow.png) | ![在线生图](docs/screenshots/online-studio.png) | ![素材库](docs/screenshots/asset-library.png) |
+| ![自定义工作流](docs/screenshots/custom-workflow.png) | ![在线生图](docs/screenshots/online-studio.png) | ![素材库](docs/screenshots/asset-library.png) |
 
 ## 最近更新
 

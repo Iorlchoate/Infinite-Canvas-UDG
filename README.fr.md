@@ -76,9 +76,9 @@ L'application ne contacte que l'API que vous configurez, et uniquement lorsque v
 
 ## Aperçu de l'interface
 
-| Toile infinie · workflow | Studio en ligne | Bibliothèque d'assets |
+| Workflows personnalisés | Studio en ligne | Bibliothèque d'assets |
 | --- | --- | --- |
-| ![Workflow de la toile](docs/screenshots/canvas-workflow.png) | ![Studio en ligne](docs/screenshots/online-studio.png) | ![Bibliothèque d'assets](docs/screenshots/asset-library.png) |
+| ![Workflows personnalisés](docs/screenshots/custom-workflow.png) | ![Studio en ligne](docs/screenshots/online-studio.png) | ![Bibliothèque d'assets](docs/screenshots/asset-library.png) |
 
 ## Dernières nouveautés
 

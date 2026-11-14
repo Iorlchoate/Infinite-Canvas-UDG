@@ -76,9 +76,9 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 
 ## 画面プレビュー
 
-| 無限キャンバス · ワークフロー | オンライン生成 | 素材ライブラリ |
+| カスタムワークフロー | オンライン生成 | 素材ライブラリ |
 | --- | --- | --- |
-| ![キャンバスのワークフロー](docs/screenshots/canvas-workflow.png) | ![オンライン生成](docs/screenshots/online-studio.png) | ![素材ライブラリ](docs/screenshots/asset-library.png) |
+| ![カスタムワークフロー](docs/screenshots/custom-workflow.png) | ![オンライン生成](docs/screenshots/online-studio.png) | ![素材ライブラリ](docs/screenshots/asset-library.png) |
 
 ## 最近の更新
 

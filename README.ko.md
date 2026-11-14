@@ -76,9 +76,9 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 
 ## 화면 미리보기
 
-| 무한 캔버스 · 워크플로 | 온라인 스튜디오 | 에셋 라이브러리 |
+| 커스텀 워크플로 | 온라인 스튜디오 | 에셋 라이브러리 |
 | --- | --- | --- |
-| ![캔버스 워크플로](docs/screenshots/canvas-workflow.png) | ![온라인 스튜디오](docs/screenshots/online-studio.png) | ![에셋 라이브러리](docs/screenshots/asset-library.png) |
+| ![커스텀 워크플로](docs/screenshots/custom-workflow.png) | ![온라인 스튜디오](docs/screenshots/online-studio.png) | ![에셋 라이브러리](docs/screenshots/asset-library.png) |
 
 ## 최근 업데이트
 

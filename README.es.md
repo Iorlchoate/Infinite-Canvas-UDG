@@ -76,9 +76,9 @@ La aplicación solo contacta con la API que configures, y solo cuando llamas exp
 
 ## Capturas de pantalla
 
-| Lienzo infinito · flujo | Estudio online | Biblioteca de recursos |
+| Flujos personalizados | Estudio online | Biblioteca de recursos |
 | --- | --- | --- |
-| ![Flujo del lienzo](docs/screenshots/canvas-workflow.png) | ![Estudio online](docs/screenshots/online-studio.png) | ![Biblioteca de recursos](docs/screenshots/asset-library.png) |
+| ![Flujos personalizados](docs/screenshots/custom-workflow.png) | ![Estudio online](docs/screenshots/online-studio.png) | ![Biblioteca de recursos](docs/screenshots/asset-library.png) |
 
 ## Novedades
 

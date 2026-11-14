@@ -76,9 +76,9 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 
 ## Скриншоты
 
-| Бесконечный холст · воркфлоу | Онлайн-студия | Библиотека материалов |
+| Пользовательские воркфлоу | Онлайн-студия | Библиотека материалов |
 | --- | --- | --- |
-| ![Воркфлоу холста](docs/screenshots/canvas-workflow.png) | ![Онлайн-студия](docs/screenshots/online-studio.png) | ![Библиотека материалов](docs/screenshots/asset-library.png) |
+| ![Пользовательские воркфлоу](docs/screenshots/custom-workflow.png) | ![Онлайн-студия](docs/screenshots/online-studio.png) | ![Библиотека материалов](docs/screenshots/asset-library.png) |
 
 ## Последние обновления
 

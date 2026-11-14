@@ -76,9 +76,9 @@ The app only talks to the API endpoint you configure, and only when you explicit
 
 ## Screenshots
 
-| Infinite canvas · workflow | Online studio | Asset library |
+| Custom workflows | Online studio | Asset library |
 | --- | --- | --- |
-| ![Infinite canvas workflow](docs/screenshots/canvas-workflow.png) | ![Online studio](docs/screenshots/online-studio.png) | ![Asset library](docs/screenshots/asset-library.png) |
+| ![Custom workflows](docs/screenshots/custom-workflow.png) | ![Online studio](docs/screenshots/online-studio.png) | ![Asset library](docs/screenshots/asset-library.png) |
 
 ## Recent updates
 
