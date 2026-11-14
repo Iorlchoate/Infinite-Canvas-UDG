@@ -19,16 +19,9 @@
 
 <br />
 
-<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="Сайт проекта" src="https://img.shields.io/badge/WEBSITE-%D0%A1%D0%B0%D0%B9%D1%82%20%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0-111827?style=for-the-badge&logo=githubpages&logoColor=white"></a>
-<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Скачать" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=for-the-badge&logo=windows&logoColor=white"></a>
-<a href="#быстрый-старт"><img alt="Быстрый старт" src="https://img.shields.io/badge/QUICK%20START-3%20%D1%88%D0%B0%D0%B3%D0%B0-111827?style=for-the-badge"></a>
-
-<br />
-
-<img alt="release" src="https://img.shields.io/github/v/release/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&label=release&color=111827">
-<img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-111827?style=flat-square">
-<img alt="local" src="https://img.shields.io/badge/data-100%25%20local-317458?style=flat-square">
-<img alt="license" src="https://img.shields.io/github/license/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&color=111827">
+<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="Сайт проекта" src="https://img.shields.io/badge/WEBSITE-%D0%A1%D0%B0%D0%B9%D1%82%20%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0-111827?style=flat-square&logo=githubpages&logoColor=white"></a>&nbsp;&nbsp;
+<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Скачать" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
+<a href="#быстрый-старт"><img alt="Быстрый старт" src="https://img.shields.io/badge/QUICK%20START-3%20%D1%88%D0%B0%D0%B3%D0%B0-111827?style=flat-square"></a>
 
 </div>
 
@@ -42,6 +35,27 @@
 
 > Портативная сборка включает Python и все офлайн-зависимости: **Python ставить не нужно, окружение настраивать не нужно, всё работает без интернета**.
 > После распаковки сохраните папки `python/` и `packages/`.
+
+## Доступ с телефона и планшета
+
+Приложение устанавливать не нужно: подключите устройство к той же Wi-Fi и откройте LAN-адрес, который печатает консоль после `start.bat`:
+
+```text
+Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
+```
+
+| Устройство | Браузер | Рекомендуемые шаги |
+| --- | --- | --- |
+| Android-телефон | Chrome / Edge | Открыть адрес → меню «Добавить на главный экран» → полный экран |
+| Android-планшет | Chrome / Edge | Открыть в горизонтальной ориентации; перетаскивать узлы одним пальцем, масштабировать двумя |
+| iPhone | Safari | Открыть адрес → «Поделиться» → «На экран «Домой»» |
+| iPad | Safari | Открыть в горизонтальной ориентации; «Поделиться» → «На экран «Домой»» |
+
+**Сенсорное управление:** один палец — перетаскивание узлов / панорамирование, два пальца — масштабирование, двойной щелчок — редактирование. Страницы холста удобнее в горизонтальной ориентации.
+
+**Если не открывается:** проверьте, что оба устройства в одной Wi-Fi (не гостевая сеть и не мобильный интернет), используйте адрес `192.168.x.x`, а не `127.0.0.1`; разрешите Python в брандмауэре Windows; отключите VPN и изоляцию AP на роутере.
+
+> Данные, материалы и ключи API остаются на компьютере. Когда компьютер выключен или приложение закрыто, телефон и планшет не смогут подключиться. Удалённый доступ требует туннеля или проброса портов — на ваш риск. Нативных APK / IPA пока нет.
 
 ## Почему локально
 
@@ -60,24 +74,11 @@
 | **Бесконечный холст** | Свободные узлы и связи; текст→изображение, изображение→изображение, локальная правка, расширение и мультивидовые сетки |
 | **Библиотека материалов** | Группы, пакетная сортировка, умные категории; расширение Chrome и коннектор Photoshop |
 
-<details>
-<summary><b>Больше скриншотов</b></summary>
+## Скриншоты
 
-<br />
-
-**Бесконечный холст · воркфлоу**
-
-![Воркфлоу холста](docs/screenshots/canvas-workflow.png)
-
-**Онлайн-студия**
-
-![Онлайн-студия](docs/screenshots/online-studio.png)
-
-**Библиотека материалов**
-
-![Библиотека материалов](docs/screenshots/asset-library.png)
-
-</details>
+| Бесконечный холст · воркфлоу | Онлайн-студия | Библиотека материалов |
+| --- | --- | --- |
+| ![Воркфлоу холста](docs/screenshots/canvas-workflow.png) | ![Онлайн-студия](docs/screenshots/online-studio.png) | ![Библиотека материалов](docs/screenshots/asset-library.png) |
 
 ## Последние обновления
 
@@ -103,7 +104,7 @@
 | Исходный проект | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>
-<summary><b>macOS / Linux, планшеты и запуск из исходников</b></summary>
+<summary><b>macOS / Linux и запуск из исходников</b></summary>
 
 <br />
 
@@ -115,10 +116,6 @@ python3 main.py
 ```
 
 Или запустите `mac-启动服务.sh`; на macOS при проблемах с правами сначала выполните `mac-修复权限.command`.
-
-**Телефон / планшет**
-
-В той же Wi-Fi-сети откройте LAN-адрес, который печатает консоль. Поддерживаются перетаскивание одним пальцем и масштабирование двумя; страницу можно добавить на главный экран. Компьютер должен быть включён.
 
 **Из исходников (Windows)**
 

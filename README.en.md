@@ -19,16 +19,9 @@ No installation · Works offline · Data stays on your machine
 
 <br />
 
-<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="Project website" src="https://img.shields.io/badge/WEBSITE-Project%20site-111827?style=for-the-badge&logo=githubpages&logoColor=white"></a>
-<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Download" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=for-the-badge&logo=windows&logoColor=white"></a>
-<a href="#quick-start"><img alt="Quick start" src="https://img.shields.io/badge/QUICK%20START-3%20steps-111827?style=for-the-badge"></a>
-
-<br />
-
-<img alt="release" src="https://img.shields.io/github/v/release/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&label=release&color=111827">
-<img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-111827?style=flat-square">
-<img alt="local" src="https://img.shields.io/badge/data-100%25%20local-317458?style=flat-square">
-<img alt="license" src="https://img.shields.io/github/license/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&color=111827">
+<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="Project website" src="https://img.shields.io/badge/WEBSITE-Project%20site-111827?style=flat-square&logo=githubpages&logoColor=white"></a>&nbsp;&nbsp;
+<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Download" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
+<a href="#quick-start"><img alt="Quick start" src="https://img.shields.io/badge/QUICK%20START-3%20steps-111827?style=flat-square"></a>
 
 </div>
 
@@ -42,6 +35,27 @@ No installation · Works offline · Data stays on your machine
 
 > The portable package ships with Python and all offline dependencies: **no Python install, no environment setup, works offline**.
 > Keep the `python/` and `packages/` folders after unzipping.
+
+## Phone & tablet access
+
+No app needed on the same Wi-Fi. Open the LAN address printed in the console after `start.bat`:
+
+```text
+Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
+```
+
+| Device | Browser | Recommended steps |
+| --- | --- | --- |
+| Android phone | Chrome / Edge | Open the address → menu "Add to Home screen" → full screen |
+| Android tablet | Chrome / Edge | Open in landscape; drag nodes with one finger, pinch to zoom |
+| iPhone | Safari | Open the address → Share → "Add to Home Screen" |
+| iPad | Safari | Open in landscape; Share → "Add to Home Screen" |
+
+**Touch:** one finger to drag nodes / pan the canvas, two fingers to pinch-zoom, double-tap to edit. Canvas pages feel best in landscape.
+
+**If it does not open:** check that both devices are on the same Wi-Fi (not a guest network or cellular), use the `192.168.x.x` address from the console instead of `127.0.0.1`, allow Python through Windows Firewall, and disable VPN / router AP isolation.
+
+> Data, assets, and API keys stay on the PC. Once the PC is off or the app is closed, phones and tablets cannot reach it. Remote access requires a tunnel or port mapping, at your own risk. Native APK / IPA builds are not available yet.
 
 ## Why local
 
@@ -60,24 +74,11 @@ The app only talks to the API endpoint you configure, and only when you explicit
 | **Infinite canvas** | Free node placement and connections; text-to-image, image-to-image, inpaint, outpaint, and multi-view grids |
 | **Asset library** | Groups, batch cleanup, smart categories; Chrome capture and Photoshop connector plugins |
 
-<details>
-<summary><b>More screenshots</b></summary>
+## Screenshots
 
-<br />
-
-**Infinite canvas · workflow**
-
-![Infinite canvas workflow](docs/screenshots/canvas-workflow.png)
-
-**Online studio**
-
-![Online studio](docs/screenshots/online-studio.png)
-
-**Asset library**
-
-![Asset library](docs/screenshots/asset-library.png)
-
-</details>
+| Infinite canvas · workflow | Online studio | Asset library |
+| --- | --- | --- |
+| ![Infinite canvas workflow](docs/screenshots/canvas-workflow.png) | ![Online studio](docs/screenshots/online-studio.png) | ![Asset library](docs/screenshots/asset-library.png) |
 
 ## Recent updates
 
@@ -103,7 +104,7 @@ The app only talks to the API endpoint you configure, and only when you explicit
 | Upstream | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>
-<summary><b>macOS / Linux, tablets, and running from source</b></summary>
+<summary><b>macOS / Linux and running from source</b></summary>
 
 <br />
 
@@ -115,10 +116,6 @@ python3 main.py
 ```
 
 Or run `mac-启动服务.sh`; on macOS, run `mac-修复权限.command` first if permission prompts appear.
-
-**Phone / tablet**
-
-On the same Wi-Fi, open the LAN address printed in the console. Single-finger drag and pinch zoom are supported; add it to your home screen for full screen. The PC must stay on.
 
 **From source (Windows)**
 

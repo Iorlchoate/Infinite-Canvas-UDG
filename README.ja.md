@@ -19,16 +19,9 @@
 
 <br />
 
-<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="プロジェクトサイト" src="https://img.shields.io/badge/WEBSITE-%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%B5%E3%82%A4%E3%83%88-111827?style=for-the-badge&logo=githubpages&logoColor=white"></a>
-<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="ダウンロード" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=for-the-badge&logo=windows&logoColor=white"></a>
-<a href="#クイックスタート"><img alt="クイックスタート" src="https://img.shields.io/badge/QUICK%20START-3%20%E3%82%B9%E3%83%86%E3%83%83%E3%83%97-111827?style=for-the-badge"></a>
-
-<br />
-
-<img alt="release" src="https://img.shields.io/github/v/release/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&label=release&color=111827">
-<img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-111827?style=flat-square">
-<img alt="local" src="https://img.shields.io/badge/data-100%25%20local-317458?style=flat-square">
-<img alt="license" src="https://img.shields.io/github/license/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&color=111827">
+<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="プロジェクトサイト" src="https://img.shields.io/badge/WEBSITE-%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%B5%E3%82%A4%E3%83%88-111827?style=flat-square&logo=githubpages&logoColor=white"></a>&nbsp;&nbsp;
+<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="ダウンロード" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
+<a href="#クイックスタート"><img alt="クイックスタート" src="https://img.shields.io/badge/QUICK%20START-3%20%E3%82%B9%E3%83%86%E3%83%83%E3%83%97-111827?style=flat-square"></a>
 
 </div>
 
@@ -42,6 +35,27 @@
 
 > ポータブル版には Python とオフライン依存関係がすべて入っています：**Python のインストールも環境設定も不要、オフラインでも起動できます**。
 > 解凍後は `python/` と `packages/` フォルダを残してください。
+
+## スマートフォン / タブレットからのアクセス
+
+同じ Wi-Fi ならアプリのインストールは不要です。`start.bat` 実行後にコンソールへ表示される LAN アドレスをブラウザで開きます:
+
+```text
+Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
+```
+
+| 端末 | ブラウザ | おすすめの手順 |
+| --- | --- | --- |
+| Android スマートフォン | Chrome / Edge | アドレスを開く → メニュー「ホーム画面に追加」→ 全画面 |
+| Android タブレット | Chrome / Edge | 横向きで開く。1本指でノード移動、2本指でズーム |
+| iPhone | Safari | アドレスを開く → 共有 → 「ホーム画面に追加」 |
+| iPad | Safari | 横向きで開く。共有 → 「ホーム画面に追加」 |
+
+**タッチ操作**：1本指でノード / キャンバスを移動、2本指でピンチズーム、ダブルタップで編集。キャンバス系ページは横向きが快適です。
+
+**開けない場合**：同じ Wi-Fi か（ゲストネットワーク / モバイル通信でないか）、`127.0.0.1` ではなくコンソールの `192.168.x.x` を使っているかを確認してください。Windows ファイアウォールで Python を許可し、VPN / ルーターの AP 分離をオフにします。
+
+> データ、素材、API キーは PC 上に残ります。PC の電源が切れたりアプリを終了すると、スマートフォン / タブレットからはアクセスできません。外部ネットワークからのアクセスにはトンネルやポートマッピングが必要で、自己責任となります。ネイティブ APK / IPA は未提供です。
 
 ## なぜローカルか
 
@@ -60,24 +74,11 @@
 | **無限キャンバス** | ノードを自由に配置して接続。テキスト→画像、画像→画像、部分修正、拡張、マルチビューグリッド |
 | **素材ライブラリ** | グループ管理、一括整理、スマート分類。Chrome 収集拡張と Photoshop コネクタ |
 
-<details>
-<summary><b>画面をもっと見る</b></summary>
+## 画面プレビュー
 
-<br />
-
-**無限キャンバス · ワークフロー**
-
-![キャンバスのワークフロー](docs/screenshots/canvas-workflow.png)
-
-**オンライン生成**
-
-![オンライン生成](docs/screenshots/online-studio.png)
-
-**素材ライブラリ**
-
-![素材ライブラリ](docs/screenshots/asset-library.png)
-
-</details>
+| 無限キャンバス · ワークフロー | オンライン生成 | 素材ライブラリ |
+| --- | --- | --- |
+| ![キャンバスのワークフロー](docs/screenshots/canvas-workflow.png) | ![オンライン生成](docs/screenshots/online-studio.png) | ![素材ライブラリ](docs/screenshots/asset-library.png) |
 
 ## 最近の更新
 
@@ -103,7 +104,7 @@
 | 上流プロジェクト | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>
-<summary><b>macOS / Linux、タブレット、ソースからの実行</b></summary>
+<summary><b>macOS / Linux、ソースからの実行</b></summary>
 
 <br />
 
@@ -115,10 +116,6 @@ python3 main.py
 ```
 
 または `mac-启动服务.sh` を実行します。macOS で権限の確認が出る場合は、先に `mac-修复权限.command` を実行してください。
-
-**スマートフォン / タブレット**
-
-同じ Wi-Fi で、コンソールに表示された LAN アドレスをブラウザで開きます。1本指のドラッグと2本指のピンチズームに対応。ホーム画面に追加すると全画面で使えます。PC は起動したままにしてください。
 
 **ソースから実行（Windows）**
 

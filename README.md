@@ -19,16 +19,9 @@
 
 <br />
 
-<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="项目介绍网站" src="https://img.shields.io/badge/WEBSITE-%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D%E7%BD%91%E7%AB%99-111827?style=for-the-badge&logo=githubpages&logoColor=white"></a>
-<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="下载最新版" src="https://img.shields.io/badge/DOWNLOAD-Windows%20%E7%BB%BF%E8%89%B2%E5%8C%85-111827?style=for-the-badge&logo=windows&logoColor=white"></a>
-<a href="#一分钟开始"><img alt="快速开始" src="https://img.shields.io/badge/QUICK%20START-3%20%E6%AD%A5%E5%BC%80%E5%A7%8B-111827?style=for-the-badge"></a>
-
-<br />
-
-<img alt="release" src="https://img.shields.io/github/v/release/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&label=release&color=111827">
-<img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-111827?style=flat-square">
-<img alt="local" src="https://img.shields.io/badge/data-100%25%20local-317458?style=flat-square">
-<img alt="license" src="https://img.shields.io/github/license/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&color=111827">
+<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="项目介绍网站" src="https://img.shields.io/badge/WEBSITE-%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D%E7%BD%91%E7%AB%99-111827?style=flat-square&logo=githubpages&logoColor=white"></a>&nbsp;&nbsp;
+<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="下载最新版" src="https://img.shields.io/badge/DOWNLOAD-Windows%20%E7%BB%BF%E8%89%B2%E5%8C%85-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
+<a href="#一分钟开始"><img alt="快速开始" src="https://img.shields.io/badge/QUICK%20START-3%20%E6%AD%A5%E5%BC%80%E5%A7%8B-111827?style=flat-square"></a>
 
 </div>
 
@@ -42,6 +35,27 @@
 
 > 绿色包内置便携 Python 与全部离线依赖：**不用装 Python、不用配环境、断网也能启动**。
 > 解压后请保留 `python/` 与 `packages/` 目录。
+
+## 手机 / 平板访问
+
+同一 Wi-Fi 下无需安装 App，用浏览器打开电脑的局域网地址即可。启动 `start.bat` 后，控制台会打印：
+
+```text
+Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
+```
+
+| 设备 | 浏览器 | 推荐步骤 |
+| --- | --- | --- |
+| Android 手机 | Chrome / Edge | 打开地址 → 菜单「添加到主屏幕」→ 全屏使用 |
+| Android 平板 | Chrome / Edge | 横屏打开；单指拖动节点，双指缩放画布 |
+| iPhone | Safari | 打开地址 → 分享 → 「添加到主屏幕」 |
+| iPad | Safari | 横屏打开；分享 → 「添加到主屏幕」 |
+
+**触屏操作**：单指拖动节点 / 平移画布，双指捏合缩放，双击节点可编辑；画布类页面横屏体验更好。
+
+**打不开时**：确认手机与电脑在同一 Wi-Fi（不是访客网络 / 蜂窝），用控制台里的 `192.168.x.x` 地址而不是 `127.0.0.1`；Windows 防火墙放行 Python；关闭 VPN / 路由器 AP 隔离。
+
+> 数据、素材与 API Key 都在这台电脑上，电脑关机或退出程序后手机 / 平板无法访问；跨网络访问需自建端口映射或内网穿透，请自行评估安全风险。原生 APK / IPA 暂不提供。
 
 ## 为什么是本地
 
@@ -60,24 +74,11 @@
 | **无限画布** | 节点自由摆放、连线组合；文生图 / 图生图 / 局部重绘 / 扩展出图 / 九宫格多视角 |
 | **素材库** | 分组管理、批量整理、智能分类；配套 Chrome 采集插件与 Photoshop 直连插件 |
 
-<details>
-<summary><b>更多界面截图</b></summary>
+## 界面预览
 
-<br />
-
-**无限画布 · 工作流**
-
-![无限画布工作流](docs/screenshots/canvas-workflow.png)
-
-**在线生图**
-
-![在线生图](docs/screenshots/online-studio.png)
-
-**素材库**
-
-![素材库](docs/screenshots/asset-library.png)
-
-</details>
+| 无限画布 · 工作流 | 在线生图 | 素材库 |
+| --- | --- | --- |
+| ![无限画布工作流](docs/screenshots/canvas-workflow.png) | ![在线生图](docs/screenshots/online-studio.png) | ![素材库](docs/screenshots/asset-library.png) |
 
 ## 最近更新
 
@@ -103,7 +104,7 @@
 | 上游项目 | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>
-<summary><b>macOS / Linux、手机平板、源码运行</b></summary>
+<summary><b>macOS / Linux、源码运行</b></summary>
 
 <br />
 
@@ -115,10 +116,6 @@ python3 main.py
 ```
 
 或使用 `mac-启动服务.sh`；macOS 首次运行如遇权限提示，先执行 `mac-修复权限.command`。
-
-**手机 / 平板**
-
-同一 Wi-Fi 下，用浏览器打开控制台打印的局域网地址即可；支持单指拖动、双指缩放，可「添加到主屏幕」。电脑关机后无法访问。
 
 **源码运行（Windows）**
 

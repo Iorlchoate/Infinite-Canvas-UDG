@@ -19,16 +19,9 @@
 
 <br />
 
-<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="프로젝트 사이트" src="https://img.shields.io/badge/WEBSITE-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EC%82%AC%EC%9D%B4%ED%8A%B8-111827?style=for-the-badge&logo=githubpages&logoColor=white"></a>
-<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="다운로드" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=for-the-badge&logo=windows&logoColor=white"></a>
-<a href="#빠른-시작"><img alt="빠른 시작" src="https://img.shields.io/badge/QUICK%20START-3%20%EB%8B%A8%EA%B3%84-111827?style=for-the-badge"></a>
-
-<br />
-
-<img alt="release" src="https://img.shields.io/github/v/release/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&label=release&color=111827">
-<img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-111827?style=flat-square">
-<img alt="local" src="https://img.shields.io/badge/data-100%25%20local-317458?style=flat-square">
-<img alt="license" src="https://img.shields.io/github/license/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&color=111827">
+<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="프로젝트 사이트" src="https://img.shields.io/badge/WEBSITE-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EC%82%AC%EC%9D%B4%ED%8A%B8-111827?style=flat-square&logo=githubpages&logoColor=white"></a>&nbsp;&nbsp;
+<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="다운로드" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
+<a href="#빠른-시작"><img alt="빠른 시작" src="https://img.shields.io/badge/QUICK%20START-3%20%EB%8B%A8%EA%B3%84-111827?style=flat-square"></a>
 
 </div>
 
@@ -42,6 +35,27 @@
 
 > 포터블 패키지에는 Python과 모든 오프라인 의존성이 포함되어 있습니다: **Python 설치, 환경 설정, 인터넷 연결 없이도 실행됩니다**.
 > 압축을 푼 뒤 `python/`과 `packages/` 폴더를 유지하세요.
+
+## 휴대폰 / 태블릿 접속
+
+같은 Wi-Fi에서 앱 설치 없이 `start.bat` 실행 후 콘솔에 표시되는 LAN 주소를 브라우저로 열면 됩니다:
+
+```text
+Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
+```
+
+| 기기 | 브라우저 | 권장 순서 |
+| --- | --- | --- |
+| Android 휴대폰 | Chrome / Edge | 주소 열기 → 메뉴 «홈 화면에 추가» → 전체 화면 |
+| Android 태블릿 | Chrome / Edge | 가로 모드로 열기; 한 손가락으로 노드 이동, 두 손가락으로 확대/축소 |
+| iPhone | Safari | 주소 열기 → 공유 → «홈 화면에 추가» |
+| iPad | Safari | 가로 모드로 열기; 공유 → «홈 화면에 추가» |
+
+**터치 조작:** 한 손가락으로 노드 이동 / 캔버스 이동, 두 손가락으로 확대/축소, 더블 탭으로 편집. 캔버스 페이지는 가로 모드가 더 편합니다.
+
+**열리지 않을 때:** 두 기기가 같은 Wi-Fi인지(게스트 네트워크 / 셀룰러 아님), `127.0.0.1` 대신 콘솔의 `192.168.x.x` 주소를 사용했는지 확인하세요. Windows 방화벽에서 Python을 허용하고 VPN / 공유기 AP 격리를 끄세요.
+
+> 데이터, 에셋, API 키는 PC에 남습니다. PC가 꺼지거나 앱이 종료되면 휴대폰 / 태블릿에서 접속할 수 없습니다. 외부 네트워크 접속은 터널이나 포트 매핑이 필요하며 위험은 직접 감수해야 합니다. 네이티브 APK / IPA는 아직 제공하지 않습니다.
 
 ## 왜 로컬인가
 
@@ -60,24 +74,11 @@
 | **무한 캔버스** | 노드 자유 배치와 연결; 텍스트→이미지, 이미지→이미지, 부분 수정, 확장, 다중 뷰 그리드 |
 | **에셋 라이브러리** | 그룹, 일괄 정리, 스마트 분류; Chrome 수집 확장과 Photoshop 커넥터 |
 
-<details>
-<summary><b>더 많은 화면</b></summary>
+## 화면 미리보기
 
-<br />
-
-**무한 캔버스 · 워크플로**
-
-![캔버스 워크플로](docs/screenshots/canvas-workflow.png)
-
-**온라인 스튜디오**
-
-![온라인 스튜디오](docs/screenshots/online-studio.png)
-
-**에셋 라이브러리**
-
-![에셋 라이브러리](docs/screenshots/asset-library.png)
-
-</details>
+| 무한 캔버스 · 워크플로 | 온라인 스튜디오 | 에셋 라이브러리 |
+| --- | --- | --- |
+| ![캔버스 워크플로](docs/screenshots/canvas-workflow.png) | ![온라인 스튜디오](docs/screenshots/online-studio.png) | ![에셋 라이브러리](docs/screenshots/asset-library.png) |
 
 ## 최근 업데이트
 
@@ -103,7 +104,7 @@
 | 원본 프로젝트 | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>
-<summary><b>macOS / Linux, 태블릿, 소스 실행</b></summary>
+<summary><b>macOS / Linux, 소스 실행</b></summary>
 
 <br />
 
@@ -115,10 +116,6 @@ python3 main.py
 ```
 
 또는 `mac-启动服务.sh`를 실행합니다. macOS에서 권한 안내가 나오면 먼저 `mac-修复权限.command`를 실행하세요.
-
-**휴대폰 / 태블릿**
-
-같은 Wi-Fi에서 콘솔에 출력된 LAN 주소를 브라우저로 엽니다. 한 손가락 드래그와 두 손가락 확대/축소를 지원하며, 홈 화면에 추가하면 전체 화면으로 사용할 수 있습니다. PC는 켜져 있어야 합니다.
 
 **소스에서 실행 (Windows)**
 

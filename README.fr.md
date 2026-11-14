@@ -19,16 +19,9 @@ Sans installation · Fonctionne hors ligne · Vos données restent sur votre mac
 
 <br />
 
-<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="Site du projet" src="https://img.shields.io/badge/WEBSITE-Site%20du%20projet-111827?style=for-the-badge&logo=githubpages&logoColor=white"></a>
-<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Télécharger" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=for-the-badge&logo=windows&logoColor=white"></a>
-<a href="#démarrage-rapide"><img alt="Démarrage rapide" src="https://img.shields.io/badge/QUICK%20START-3%20%C3%A9tapes-111827?style=for-the-badge"></a>
-
-<br />
-
-<img alt="release" src="https://img.shields.io/github/v/release/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&label=release&color=111827">
-<img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-111827?style=flat-square">
-<img alt="local" src="https://img.shields.io/badge/data-100%25%20local-317458?style=flat-square">
-<img alt="license" src="https://img.shields.io/github/license/Iorlchoate/Infinite-Canvas-UDG?style=flat-square&color=111827">
+<a href="https://iorlchoate.github.io/infinite-canvas-site/"><img alt="Site du projet" src="https://img.shields.io/badge/WEBSITE-Site%20du%20projet-111827?style=flat-square&logo=githubpages&logoColor=white"></a>&nbsp;&nbsp;
+<a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Télécharger" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
+<a href="#démarrage-rapide"><img alt="Démarrage rapide" src="https://img.shields.io/badge/QUICK%20START-3%20%C3%A9tapes-111827?style=flat-square"></a>
 
 </div>
 
@@ -42,6 +35,27 @@ Sans installation · Fonctionne hors ligne · Vos données restent sur votre mac
 
 > La version portable embarque Python et toutes les dépendances hors ligne : **aucune installation de Python, aucun environnement à configurer, fonctionne hors ligne**.
 > Conservez les dossiers `python/` et `packages/` après décompression.
+
+## Accès mobile et tablette
+
+Aucune app à installer sur le même Wi-Fi : ouvrez l'adresse LAN affichée dans la console après `start.bat` :
+
+```text
+Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
+```
+
+| Appareil | Navigateur | Étapes conseillées |
+| --- | --- | --- |
+| Téléphone Android | Chrome / Edge | Ouvrir l'adresse → menu « Ajouter à l'écran d'accueil » → plein écran |
+| Tablette Android | Chrome / Edge | Ouvrir en paysage ; glisser un nœud à un doigt, pincer à deux doigts |
+| iPhone | Safari | Ouvrir l'adresse → Partager → « Sur l'écran d'accueil » |
+| iPad | Safari | Ouvrir en paysage ; Partager → « Sur l'écran d'accueil » |
+
+**Tactile** : un doigt pour déplacer les nœuds / la toile, deux doigts pour zoomer, double-tap pour éditer ; les pages canvas sont plus confortables en paysage.
+
+**Si ça ne s'ouvre pas** : même Wi-Fi (pas réseau invité / 4G), adresse `192.168.x.x` (pas `127.0.0.1`), autoriser Python dans le pare-feu Windows, désactiver VPN / isolation AP.
+
+> Les données, assets et clés restent sur le PC ; une fois le PC éteint ou l'app fermée, le mobile n'y accède plus. L'accès hors réseau nécessite un tunnel, à vos risques. Pas d'APK / IPA natif pour l'instant.
 
 ## Pourquoi en local
 
@@ -60,24 +74,11 @@ L'application ne contacte que l'API que vous configurez, et uniquement lorsque v
 | **Toile infinie** | Nœuds libres et connexions ; texte→image, image→image, retouche locale, extension et grilles multi-vues |
 | **Bibliothèque d'assets** | Groupes, tri par lots, catégories intelligentes ; extensions Chrome et connecteur Photoshop |
 
-<details>
-<summary><b>Plus de captures</b></summary>
+## Aperçu de l'interface
 
-<br />
-
-**Toile infinie · workflow**
-
-![Workflow de la toile](docs/screenshots/canvas-workflow.png)
-
-**Studio en ligne**
-
-![Studio en ligne](docs/screenshots/online-studio.png)
-
-**Bibliothèque d'assets**
-
-![Bibliothèque d'assets](docs/screenshots/asset-library.png)
-
-</details>
+| Toile infinie · workflow | Studio en ligne | Bibliothèque d'assets |
+| --- | --- | --- |
+| ![Workflow de la toile](docs/screenshots/canvas-workflow.png) | ![Studio en ligne](docs/screenshots/online-studio.png) | ![Bibliothèque d'assets](docs/screenshots/asset-library.png) |
 
 ## Dernières nouveautés
 
@@ -103,7 +104,7 @@ L'application ne contacte que l'API que vous configurez, et uniquement lorsque v
 | Projet amont | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>
-<summary><b>macOS / Linux, tablette et exécution depuis les sources</b></summary>
+<summary><b>macOS / Linux et exécution depuis les sources</b></summary>
 
 <br />
 
@@ -115,10 +116,6 @@ python3 main.py
 ```
 
 Ou lancez `mac-启动服务.sh` ; sur macOS, exécutez d'abord `mac-修复权限.command` en cas de problème de permissions.
-
-**Téléphone / tablette**
-
-Sur le même Wi-Fi, ouvrez l'adresse LAN affichée dans la console. Le glissement à un doigt et le zoom à deux doigts sont pris en charge ; ajoutez la page à l'écran d'accueil pour le plein écran. Le PC doit rester allumé.
 
 **Depuis les sources (Windows)**
 
