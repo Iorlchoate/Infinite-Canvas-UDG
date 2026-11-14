@@ -1,5 +1,15 @@
 <div align="center">
 
+<p>
+  <b>简体中文</b> ·
+  <a href="README.en.md">English</a> ·
+  <a href="README.fr.md">Français</a> ·
+  <a href="README.es.md">Español</a> ·
+  <a href="README.ru.md">Русский</a> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="README.ja.md">日本語</a>
+</p>
+
 # 无限画布 · Infinite Canvas
 
 **把想法、生成与沉淀，都放进一张无限画布。**
@@ -55,9 +65,9 @@
 
 <br />
 
-**自定义工作流**
+**无限画布 · 工作流**
 
-![自定义工作流](docs/screenshots/custom-workflow.png)
+![无限画布工作流](docs/screenshots/canvas-workflow.png)
 
 **在线生图**
 
