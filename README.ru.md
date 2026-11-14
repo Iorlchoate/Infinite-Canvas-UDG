@@ -76,9 +76,17 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 
 ## Скриншоты
 
-| Пользовательские воркфлоу | Онлайн-студия | Библиотека материалов |
-| --- | --- | --- |
-| ![Пользовательские воркфлоу](docs/screenshots/custom-workflow.png) | ![Онлайн-студия](docs/screenshots/online-studio.png) | ![Библиотека материалов](docs/screenshots/asset-library.png) |
+**Пользовательские воркфлоу**
+
+![Пользовательские воркфлоу](docs/screenshots/custom-workflow.png)
+
+**Онлайн-студия**
+
+![Онлайн-студия](docs/screenshots/online-studio.png)
+
+**Библиотека материалов**
+
+![Библиотека материалов](docs/screenshots/asset-library.png)
 
 ## Последние обновления
 

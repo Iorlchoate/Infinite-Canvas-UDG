@@ -76,9 +76,17 @@ The app only talks to the API endpoint you configure, and only when you explicit
 
 ## Screenshots
 
-| Custom workflows | Online studio | Asset library |
-| --- | --- | --- |
-| ![Custom workflows](docs/screenshots/custom-workflow.png) | ![Online studio](docs/screenshots/online-studio.png) | ![Asset library](docs/screenshots/asset-library.png) |
+**Custom workflows**
+
+![Custom workflows](docs/screenshots/custom-workflow.png)
+
+**Online studio**
+
+![Online studio](docs/screenshots/online-studio.png)
+
+**Asset library**
+
+![Asset library](docs/screenshots/asset-library.png)
 
 ## Recent updates
 

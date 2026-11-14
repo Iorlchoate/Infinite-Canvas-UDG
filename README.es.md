@@ -76,9 +76,17 @@ La aplicación solo contacta con la API que configures, y solo cuando llamas exp
 
 ## Capturas de pantalla
 
-| Flujos personalizados | Estudio online | Biblioteca de recursos |
-| --- | --- | --- |
-| ![Flujos personalizados](docs/screenshots/custom-workflow.png) | ![Estudio online](docs/screenshots/online-studio.png) | ![Biblioteca de recursos](docs/screenshots/asset-library.png) |
+**Flujos personalizados**
+
+![Flujos personalizados](docs/screenshots/custom-workflow.png)
+
+**Estudio online**
+
+![Estudio online](docs/screenshots/online-studio.png)
+
+**Biblioteca de recursos**
+
+![Biblioteca de recursos](docs/screenshots/asset-library.png)
 
 ## Novedades
 

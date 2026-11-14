@@ -76,9 +76,17 @@ L'application ne contacte que l'API que vous configurez, et uniquement lorsque v
 
 ## Aperçu de l'interface
 
-| Workflows personnalisés | Studio en ligne | Bibliothèque d'assets |
-| --- | --- | --- |
-| ![Workflows personnalisés](docs/screenshots/custom-workflow.png) | ![Studio en ligne](docs/screenshots/online-studio.png) | ![Bibliothèque d'assets](docs/screenshots/asset-library.png) |
+**Workflows personnalisés**
+
+![Workflows personnalisés](docs/screenshots/custom-workflow.png)
+
+**Studio en ligne**
+
+![Studio en ligne](docs/screenshots/online-studio.png)
+
+**Bibliothèque d'assets**
+
+![Bibliothèque d'assets](docs/screenshots/asset-library.png)
 
 ## Dernières nouveautés
 
