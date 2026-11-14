@@ -61,6 +61,10 @@
         <div id="board" class="board editor-only">
             <div id="dropOverlay" class="drop-overlay" data-i18n="canvas.dropImage">拖放图片到画布</div>
             <div id="selectionBox" class="selection-box"></div>
+            <div id="snapGuides" class="snap-guides" aria-hidden="true">
+                <div id="snapGuideV" class="alignment-guide vertical"></div>
+                <div id="snapGuideH" class="alignment-guide horizontal"></div>
+            </div>
             <div id="selectionHub" class="selection-hub"></div>
             <div id="createMenu" class="create-menu">
                 <button class="menu-btn" onclick="menuAdd('image')"><i data-lucide="image-plus" class="w-4 h-4"></i><span data-i18n="canvas.imageCard">上传节点</span></button>

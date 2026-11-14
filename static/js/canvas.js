@@ -347,6 +347,19 @@ let nodes = [];
 let connections = [];
 let viewport = {x: -1800, y: -1000, scale: 1};
 let dragNode = null;
+// 对齐参考线：拖动开始时构建一次吸附计划，移动过程中只做算术，避免每帧读 DOM。
+const SNAP_PX = 7;
+let dragSnapPlan = null;
+let resizeSnapPlan = null;
+// 分组容器几何：与 DX OS 的 52px 标题栏 / 18px 内边距 / 16px 间距对齐。
+const GROUP_PAD = 18;
+const GROUP_HEAD = 52;
+const GROUP_GAP = 16;
+const GROUP_MIN_W = 280;
+const GROUP_MIN_H = 180;
+const snapGuidesEl = document.getElementById('snapGuides');
+const snapGuideVEl = document.getElementById('snapGuideV');
+const snapGuideHEl = document.getElementById('snapGuideH');
 let dragBoard = null;
 let minimapDrag = false;
 let minimapState = null;
@@ -2435,7 +2448,7 @@ function addLoopNode(point){
 }
 function addGroupNode(point){
     const p = point || defaultPoint(40, 0);
-    return addNode({id:uid('grp'), type:'group', x:p.x, y:p.y, w:300, h:220, items:[]});
+    return addNode({id:uid('grp'), type:'group', title:'新建分组', x:p.x, y:p.y, w:560, h:380, items:[]});
 }
 function pickMediaForNode(nodeId){
     const input = document.createElement('input');
@@ -3226,6 +3239,7 @@ function createInputGroupFromOutput(node, point){
     const group = {
         id:uid('grp'),
         type:'group',
+        title:'新建分组',
         x:base.x,
         y:base.y,
         w:cols * cardW + (cols - 1) * gap + 48,
@@ -3659,13 +3673,15 @@ function createGroupForUploadedNodes(created, point){
     const group = {
         id:uid('grp'),
         type:'group',
-        x:Number.isFinite(box.x) ? box.x - 24 : fallback.x - 24,
-        y:Number.isFinite(box.y) ? box.y - 58 : fallback.y - 58,
-        w:Number.isFinite(box.w) ? box.w + 48 : 600,
-        h:Number.isFinite(box.h) ? box.h + 90 : 420,
+        title:'新建分组',
+        x:Number.isFinite(box.x) ? box.x - GROUP_PAD : fallback.x - GROUP_PAD,
+        y:Number.isFinite(box.y) ? box.y - GROUP_HEAD - GROUP_PAD : fallback.y - GROUP_HEAD - GROUP_PAD,
+        w:Number.isFinite(box.w) ? Math.max(GROUP_MIN_W, box.w + GROUP_PAD * 2) : 600,
+        h:Number.isFinite(box.h) ? Math.max(GROUP_MIN_H, box.h + GROUP_HEAD + GROUP_PAD * 2) : 420,
         items:targets.map(n => n.id)
     };
     nodes.push(group);
+    fitGroupToItems(group);
     selected.clear();
     selected.add(group.id);
     return group;
@@ -5803,13 +5819,15 @@ function renderNode(node){
         if(node.type === 'output') openOutputNodeMenu(node.id, e.clientX, e.clientY);
         else openGeneratorNodeMenu(node.id, e.clientX, e.clientY);
     };
-    const title = node.type === 'image' ? 'Image' : node.type === 'prompt' ? 'Prompt' : node.type === 'loop' ? tr('canvas.loopNode') : node.type === 'promptGroup' ? 'Prompts' : node.type === 'group' ? 'Group' : node.type === 'output' ? 'Output' : node.type === 'llm' ? 'LLM' : node.type === 'midjourney' ? 'Midjourney' : node.type === 'msgen' ? tr('canvas.modelscopeGenerate') : tr('canvas.apiGenerate');
+    const title = node.type === 'image' ? 'Image' : node.type === 'prompt' ? 'Prompt' : node.type === 'loop' ? tr('canvas.loopNode') : node.type === 'promptGroup' ? 'Prompts' : node.type === 'group' ? (node.title || '分组') : node.type === 'output' ? 'Output' : node.type === 'llm' ? 'LLM' : node.type === 'midjourney' ? 'Midjourney' : node.type === 'msgen' ? tr('canvas.modelscopeGenerate') : tr('canvas.apiGenerate');
     // 空白图片节点若带自定义名称（如工作台写入的「① 底图 / ② 参考图」），用它作占位标题，
     // 便于区分多图输入的角色；未命名的默认空节点仍显示 Image，不影响既有画布。
-    const displayTitle = node.type === 'image'
-        ? (node.url ? nodeTitleForMedia(node)
-                    : (node.name && node.name !== '空白图片' ? node.name : title))
-        : title;
+    const displayTitle = node.type === 'group'
+        ? escapeHtml(node.title || '分组')
+        : node.type === 'image'
+            ? (node.url ? nodeTitleForMedia(node)
+                        : (node.name && node.name !== '空白图片' ? node.name : title))
+            : title;
     // 失败徽章只在一键运行模式中显示，单节点失败已通过 alert 提示
     const showStatus = ['generator','midjourney','msgen','llm'].includes(node.type) && node.runStatus
         && (node.runStatus !== 'failed' || node._cascadeFailed);
@@ -5817,7 +5835,40 @@ function renderNode(node){
         const label = { queued:'排队中', running:'运行中', done:'完成', failed:'失败' }[node.runStatus] || '';
         return `<span class="node-run-status ${node.runStatus}"><span class="dot"></span>${escapeHtml(label)}${node._cascadeIdx?' '+node._cascadeIdx:''}</span>`;
     })() : '';
-    el.innerHTML = `<div class="node-head"><span class="node-title">${displayTitle}</span><div style="display:flex;align-items:center;gap:8px">${statusHtml}<button onclick="deleteNodeFromButton('${node.id}', event)" class="text-gray-300 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></div></div>`;
+    const groupCountHtml = node.type === 'group'
+        ? `<span class="group-node-count" title="分组内节点数">${(node.items || []).length}</span>`
+        : '';
+    el.innerHTML = `<div class="node-head"><span class="node-title">${displayTitle}</span><div style="display:flex;align-items:center;gap:8px">${groupCountHtml}${statusHtml}<button onclick="deleteNodeFromButton('${node.id}', event)" class="text-gray-300 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></div></div>`;
+    if(node.type === 'group'){
+        const head = el.querySelector('.node-head');
+        const titleEl = head?.querySelector('.node-title');
+        if(titleEl){
+            titleEl.classList.add('group-title');
+            titleEl.title = '双击重命名分组';
+            titleEl.onmousedown = e => e.stopPropagation();
+            titleEl.ondblclick = e => {
+                e.preventDefault();
+                e.stopPropagation();
+                const next = window.prompt('分组名称', node.title || '分组');
+                if(next && next.trim()){
+                    node.title = next.trim().slice(0, 40);
+                    titleEl.textContent = node.title;
+                    scheduleSave();
+                }
+            };
+        }
+        const actions = head?.lastElementChild;
+        if(actions){
+            const tidyBtn = document.createElement('button');
+            tidyBtn.type = 'button';
+            tidyBtn.className = 'group-tidy-btn';
+            tidyBtn.title = '按网格整理分组内容';
+            tidyBtn.setAttribute('aria-label', '整理分组内容');
+            tidyBtn.innerHTML = '<i data-lucide="layout-grid" class="w-4 h-4"></i>';
+            tidyBtn.onclick = e => { e.stopPropagation(); tidyGroup(node); };
+            actions.insertBefore(tidyBtn, actions.firstChild);
+        }
+    }
     const body = document.createElement('div');
     body.className = 'node-body';
     if(node.type === 'image') {
@@ -5929,33 +5980,20 @@ function renderNode(node){
     }
     if(node.type === 'loop') body.appendChild(renderLoopBody(node));
     if(node.type === 'group') {
-        const items = (node.items || []).map(id => nodes.find(n => n.id === id)).filter(Boolean);
-        const imgCount = items.filter(n => n.type === 'image').length;
-        const promptCount = items.filter(n => n.type === 'prompt').length;
-        const parts = [];
-        if(imgCount) parts.push(`${imgCount} ${tr('canvas.imageCount')}`);
-        if(promptCount) parts.push(`${promptCount} ${tr('canvas.promptCount')}`);
-        const text = parts.length ? `${parts.join(' · ')} ${tr('canvas.grouped')}` : tr('canvas.groupEmpty');
-        body.innerHTML = `<div class="text-[11px] text-gray-400">${text}</div>`;
+        const items = groupMemberNodes(node);
         const previewItems = groupImageItems(node);
-        if(previewItems.length){
-            const openGroupPreview = e => {
+        body.innerHTML = items.length ? '' : `<div class="group-node-empty">拖动节点到这里</div>`;
+        body.style.cursor = items.length ? 'default' : 'grab';
+        body.onmousedown = e => {
+            if(e.button !== 0) return;
+            if(e.detail >= 2 && previewItems.length){
                 e.preventDefault();
                 e.stopPropagation();
-                e.stopImmediatePropagation?.();
                 openGroupLightbox(node.id);
-            };
-            body.style.cursor = 'zoom-in';
-            body.onmousedown = e => {
-                if(e.button !== 0) return;
-                if(e.detail >= 2){
-                    openGroupPreview(e);
-                    return;
-                }
-                startNodeDrag(e, node);
-            };
-            body.ondblclick = openGroupPreview;
-        }
+                return;
+            }
+            startNodeDrag(e, node);
+        };
     }
     if(node.type === 'promptGroup') {
         const promptNodes = (node.items || []).map(id => nodes.find(n => n.id === id)).filter(Boolean);
@@ -9605,6 +9643,7 @@ function deleteNode(id, event){
     connections = connections.filter(c => c.from !== id && c.to !== id);
     selected.delete(id);
     render();
+    renderSelectionHub();
     scheduleSave();
 }
 function clearNodeContentBeforeDelete(id){
@@ -10948,13 +10987,16 @@ function groupSelectedImages(){
     pushUndo();
     if(targets.length){
         const box = nodeBounds(targets.map(n => n.id));
-        group = {id:uid('grp'), type:'group', x:box.x - 24, y:box.y - 58, w:box.w + 48, h:box.h + 90, items:targets.map(n => n.id)};
+        group = {id:uid('grp'), type:'group', title:'新建分组', x:box.x - GROUP_PAD, y:box.y - GROUP_HEAD - GROUP_PAD, w:Math.max(GROUP_MIN_W, box.w + GROUP_PAD * 2), h:Math.max(GROUP_MIN_H, box.h + GROUP_HEAD + GROUP_PAD * 2), items:targets.map(n => n.id)};
     } else {
         const p = defaultPoint(0, 0);
-        group = {id:uid('grp'), type:'group', x:p.x, y:p.y, w:300, h:220, items:[]};
+        group = {id:uid('grp'), type:'group', title:'新建分组', x:p.x, y:p.y, w:560, h:380, items:[]};
     }
     nodes.push(group);
-    if(targets.length) handoffExistingInputsToGroup(group, targets);
+    if(targets.length){
+        fitGroupToItems(group);
+        handoffExistingInputsToGroup(group, targets);
+    }
     selected.clear();
     selected.add(group.id);
     syncGeneratorInputs();
@@ -10975,10 +11017,172 @@ function nodeBounds(ids){
     const y2 = Math.max(...rects.map(r => r.y + r.h));
     return {x:x1, y:y1, w:x2 - x1, h:y2 - y1};
 }
+// ── 分组容器：自动适配 / 网格整理 ────────────────────────────
+function groupMemberNodes(group){
+    return (group?.items || []).map(id => nodes.find(n => n.id === id)).filter(Boolean);
+}
+function fitGroupToItems(group){
+    if(!group || group.type !== 'group') return false;
+    const items = groupMemberNodes(group);
+    if(!items.length){
+        group.w = Math.max(GROUP_MIN_W, group.w || 300);
+        group.h = Math.max(GROUP_MIN_H, group.h || 220);
+        return true;
+    }
+    const rects = items.map(nodeRect);
+    const left = Math.min(...rects.map(r => r.x));
+    const top = Math.min(...rects.map(r => r.y));
+    const right = Math.max(...rects.map(r => r.x + r.w));
+    const bottom = Math.max(...rects.map(r => r.y + r.h));
+    group.x = Math.round(left - GROUP_PAD);
+    group.y = Math.round(top - GROUP_HEAD - GROUP_PAD);
+    group.w = Math.max(GROUP_MIN_W, Math.round(right - left + GROUP_PAD * 2));
+    group.h = Math.max(GROUP_MIN_H, Math.round(bottom - top + GROUP_HEAD + GROUP_PAD * 2));
+    return true;
+}
+function tidyGroup(group){
+    if(!group || group.type !== 'group') return;
+    const items = groupMemberNodes(group).sort((a, b) => (a.y - b.y) || (a.x - b.x));
+    if(!items.length) return;
+    pushUndo();
+    const n = items.length;
+    const ratio = Math.max(0.5, Math.min(3, (group.w || 560) / Math.max(1, group.h || 380)));
+    const cols = Math.max(1, Math.min(n, Math.round(Math.sqrt(n * ratio))));
+    const rows = Math.ceil(n / cols);
+    const colW = Array.from({length:cols}, (_, c) =>
+        Math.max(...items.filter((_, i) => i % cols === c).map(node => nodeRect(node).w))
+    );
+    const rowH = Array.from({length:rows}, (_, r) =>
+        Math.max(...items.slice(r * cols, r * cols + cols).map(node => nodeRect(node).h))
+    );
+    const x0 = group.x + GROUP_PAD;
+    const y0 = group.y + GROUP_HEAD + GROUP_PAD;
+    items.forEach((node, i) => {
+        const c = i % cols;
+        const r = Math.floor(i / cols);
+        const x = x0 + colW.slice(0, c).reduce((a, b) => a + b, 0) + c * GROUP_GAP;
+        const y = y0 + rowH.slice(0, r).reduce((a, b) => a + b, 0) + r * GROUP_GAP;
+        moveCanvasNodeAtom(node, x, y);
+    });
+    group.w = Math.max(GROUP_MIN_W, Math.round(GROUP_PAD * 2 + colW.reduce((a, b) => a + b, 0) + (cols - 1) * GROUP_GAP));
+    group.h = Math.max(GROUP_MIN_H, Math.round(GROUP_HEAD + GROUP_PAD * 2 + rowH.reduce((a, b) => a + b, 0) + (rows - 1) * GROUP_GAP));
+    render();
+    renderSelectionHub();
+    scheduleSave();
+}
+function ungroupGroup(group){
+    if(!group || group.type !== 'group') return;
+    const items = groupMemberNodes(group);
+    if(!items.length) return;
+    pushUndo();
+    const outgoing = connections.filter(c => c.from === group.id);
+    const incoming = connections.filter(c => c.to === group.id);
+    connections = connections.filter(c => c.from !== group.id && c.to !== group.id);
+    // 分组作为输出源：把 group -> target 迁移成每个子项 -> target。
+    outgoing.forEach(conn => {
+        items.forEach(child => {
+            if(canConnect(child.id, conn.to) && !connections.some(c => c.from === child.id && c.to === conn.to)){
+                connections.push({id:uid('c'), from:child.id, to:conn.to});
+            }
+        });
+    });
+    // 分组作为输入源：把 source -> group 迁移成 source -> 每个子项。
+    incoming.forEach(conn => {
+        items.forEach(child => {
+            if(canConnect(conn.from, child.id) && !connections.some(c => c.from === conn.from && c.to === child.id)){
+                connections.push({id:uid('c'), from:conn.from, to:child.id});
+            }
+        });
+    });
+    // 嵌套分组：从父分组的 items 中移除这个组。
+    nodes.forEach(parent => {
+        if(parent.type === 'group' && Array.isArray(parent.items)){
+            parent.items = parent.items.filter(id => id !== group.id);
+        }
+    });
+    nodes = nodes.filter(n => n.id !== group.id);
+    selected.clear();
+    items.forEach(item => selected.add(item.id));
+    syncGeneratorInputs();
+    refreshGeneratorInputViews();
+    render();
+    refreshSelectionVisuals();
+    scheduleSave();
+}
+function loadImageForMerge(url){
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('图片加载失败'));
+        img.src = url;
+    });
+}
+async function mergeGroupToLongImage(group){
+    const items = groupImageItems(group);
+    if(items.length < 2){
+        alert('至少需要两张图片才能合并长图');
+        return;
+    }
+    setStatus('正在合并长图...');
+    try {
+        const images = await Promise.all(items.map(item => loadImageForMerge(canvasDisplayMediaUrl(item.url, item.name))));
+        let width = Math.min(2400, Math.max(...images.map(img => img.naturalWidth || img.width || 1)));
+        if(!Number.isFinite(width) || width <= 0) throw new Error('图片尺寸无效');
+        let heights = images.map(img => {
+            const w = img.naturalWidth || img.width || 1;
+            const h = img.naturalHeight || img.height || 1;
+            return Math.max(1, Math.round(h * width / w));
+        });
+        let totalHeight = heights.reduce((a, b) => a + b, 0);
+        // 浏览器 canvas 高度有上限，超高时长图整体等比缩小。
+        if(totalHeight > 30000){
+            const scale = 30000 / totalHeight;
+            width = Math.max(1, Math.floor(width * scale));
+            heights = heights.map(h => Math.max(1, Math.floor(h * scale)));
+            totalHeight = heights.reduce((a, b) => a + b, 0);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = totalHeight;
+        const ctx = canvas.getContext('2d');
+        if(!ctx) throw new Error('浏览器不支持 Canvas');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, totalHeight);
+        let y = 0;
+        images.forEach((img, i) => {
+            ctx.drawImage(img, 0, y, width, heights[i]);
+            y += heights[i];
+        });
+        const filename = safeDownloadFileName(`${group.title || '分组'}-长图.png`, 'group-long.png');
+        canvas.toBlob(blob => {
+            if(!blob){
+                alert('合并长图失败：无法生成图片');
+                setStatus('合并长图失败');
+                return;
+            }
+            const href = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = href;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(href), 1200);
+            setStatus('已导出长图');
+        }, 'image/png');
+    } catch(err) {
+        alert(`合并长图失败：${err.message || err}`);
+        setStatus('合并长图失败');
+    }
+}
 
 function startSelection(e){
     e.preventDefault();
     e.stopPropagation();
+    hideSnapGuides();
+    dragSnapPlan = null;
+    resizeSnapPlan = null;
     if(document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
     selectDrag = {sx:e.clientX, sy:e.clientY, x:e.clientX, y:e.clientY};
     document.body.classList.add('canvas-selecting');
@@ -11015,8 +11219,57 @@ function finishSelection(){
     if(workflowTransferModal?.classList.contains('open')) updateWorkflowTransferMeta();
 }
 function renderSelectionHub(){
-    selectionHub.innerHTML = '';
-    selectionHub.classList.remove('open');
+    const groupId = selected.size === 1 ? [...selected][0] : '';
+    const group = groupId ? nodes.find(n => n.id === groupId && n.type === 'group') : null;
+    if(!group){
+        selectionHub.innerHTML = '';
+        selectionHub.classList.remove('open', 'group-hub');
+        selectionHub.dataset.key = '';
+        return;
+    }
+    const images = groupImageItems(group);
+    const key = `${group.id}:${images.length}`;
+    if(selectionHub.dataset.key !== key){
+        selectionHub.dataset.key = key;
+        const actions = [];
+        if(images.length) actions.push(['preview', 'maximize-2', '全屏']);
+        if(images.length) actions.push(['download', 'download', '下载全部']);
+        if(images.length > 1) actions.push(['merge', 'panel-top', '合并长图']);
+        actions.push(['tidy', 'layout-grid', '整理']);
+        actions.push(['ungroup', 'unlink', '解散']);
+        actions.push(['delete', 'trash-2', '删除']);
+        selectionHub.innerHTML = actions.map(([action, icon, label]) =>
+            `<button type="button" class="hub-action${action === 'delete' ? ' danger' : ''}" data-group-action="${action}"><i data-lucide="${icon}"></i><span>${label}</span></button>`
+        ).join('');
+        selectionHub.classList.add('group-hub');
+        selectionHub.querySelectorAll('[data-group-action]').forEach(button => {
+            button.onmousedown = e => e.stopPropagation();
+            button.onclick = e => {
+                e.preventDefault();
+                e.stopPropagation();
+                const action = button.dataset.groupAction;
+                if(action === 'preview') openGroupLightbox(group.id);
+                else if(action === 'download') downloadGroupNodeImages(group.id);
+                else if(action === 'merge') mergeGroupToLongImage(group);
+                else if(action === 'tidy') tidyGroup(group);
+                else if(action === 'ungroup') ungroupGroup(group);
+                else if(action === 'delete') deleteNodeFromButton(group.id, e);
+            };
+        });
+        refreshIcons();
+    }
+    selectionHub.classList.add('open');
+    const rect = nodeRect(group);
+    const screenX = rect.x * viewport.scale + viewport.x;
+    const screenY = rect.y * viewport.scale + viewport.y;
+    const hubW = selectionHub.offsetWidth || 420;
+    const hubH = selectionHub.offsetHeight || 38;
+    const boardW = board.clientWidth || 1200;
+    const left = Math.max(10, Math.min(screenX, boardW - hubW - 12));
+    let top = screenY - hubH - 8;
+    if(top < 10) top = screenY + 8;
+    selectionHub.style.left = `${left}px`;
+    selectionHub.style.top = `${top}px`;
 }
 function startSelectionLink(e, kind){
     e.preventDefault();
@@ -11042,7 +11295,7 @@ function connectSelectionToGenerator(kind, genId){
         const imgs = ids.map(id => nodes.find(n => n.id === id)).filter(n => n?.type === 'image' && n.url);
         if(!imgs.length) return;
         const box = nodeBounds(imgs.map(n => n.id));
-        source = {id:uid('grp'), type:'group', x:box.x - 24, y:box.y - 58, w:box.w + 48, h:box.h + 90, items:imgs.map(n => n.id)};
+        source = {id:uid('grp'), type:'group', title:'新建分组', x:box.x - GROUP_PAD, y:box.y - GROUP_HEAD - GROUP_PAD, w:Math.max(GROUP_MIN_W, box.w + GROUP_PAD * 2), h:Math.max(GROUP_MIN_H, box.h + GROUP_HEAD + GROUP_PAD * 2), items:imgs.map(n => n.id)};
     } else {
         const prompts = ids.map(id => nodes.find(n => n.id === id)).filter(n => n?.type === 'prompt');
         if(!prompts.length) return;
@@ -11050,6 +11303,7 @@ function connectSelectionToGenerator(kind, genId){
         source = {id:uid('pg'), type:'promptGroup', x:box.x - 24, y:box.y - 58, w:box.w + 48, h:box.h + 90, items:prompts.map(n => n.id)};
     }
     nodes.push(source);
+    if(source.type === 'group') fitGroupToItems(source);
     connections.push({id:uid('c'), from:source.id, to:genId});
     selected.clear();
     selected.add(source.id);
@@ -11399,6 +11653,9 @@ function startNodeDrag(e, node){
     if(startKnifeDrag(e)) return;
     e.preventDefault();
     e.stopPropagation();
+    dragSnapPlan = null;
+    resizeSnapPlan = null;
+    hideSnapGuides();
     let dragTarget = node;
     if(e.altKey){
         setKnifeMode(false);
@@ -11429,6 +11686,7 @@ function startNodeDrag(e, node){
         [...selected].forEach(id => collect(nodes.find(n => n.id === id)));
     }
     const children = [...collected.values()];
+    dragSnapPlan = buildSnapPlan(new Set([dragTarget.id, ...children.map(c => c.node.id)]));
     dragNode = {node: dragTarget, children, sx:e.clientX, sy:e.clientY, ox:dragTarget.x, oy:dragTarget.y};
     document.body.classList.add('canvas-node-drag');
     window.onmousemove = onNodeDrag;
@@ -11436,8 +11694,20 @@ function startNodeDrag(e, node){
 }
 function onNodeDrag(e){
     if(!dragNode) return;
-    const dx = (e.clientX - dragNode.sx) / viewport.scale;
-    const dy = (e.clientY - dragNode.sy) / viewport.scale;
+    let dx = (e.clientX - dragNode.sx) / viewport.scale;
+    let dy = (e.clientY - dragNode.sy) / viewport.scale;
+    // 按住 Ctrl/⌘ 临时关闭吸附，方便 1px 级微调。
+    // 不用 Shift：Shift 在画布里是“小刀模式”的全局修饰键，会把拖动吃掉。
+    // 也不用 Alt：Alt 在按下时已经被“复制拖动”占用。
+    const snapDisabled = e.ctrlKey || e.metaKey;
+    if(dragSnapPlan && !snapDisabled){
+        const snapped = resolveSnap(dragSnapPlan, dx, dy);
+        dx = snapped.dx;
+        dy = snapped.dy;
+        renderSnapGuides(snapped.guideX, snapped.guideY);
+    } else {
+        renderSnapGuides(null, null);
+    }
     dragNode.node.x = dragNode.ox + dx;
     dragNode.node.y = dragNode.oy + dy;
     const el = nodesEl.querySelector(`.node[data-id="${dragNode.node.id}"]`);
@@ -11462,15 +11732,20 @@ function onNodeDrag(e){
 function startNodeResize(e, node){
     e.preventDefault();
     e.stopPropagation();
-    const el = nodesEl.querySelector(`.node[data-id="${node.id}"]`);
-    const rect = el?.getBoundingClientRect();
+    dragSnapPlan = null;
+    resizeSnapPlan = null;
+    hideSnapGuides();
+    const rect = nodeRect(node);
     resizeNode = {
         node,
         sx:e.clientX,
         sy:e.clientY,
-        sw:(rect?.width ? rect.width / viewport.scale : node.w || defaultNodeSize(node.type).w),
-        sh:(rect?.height ? rect.height / viewport.scale : node.h || defaultNodeSize(node.type).h || 160)
+        left:rect.x,
+        top:rect.y,
+        sw:rect.w,
+        sh:rect.h
     };
+    resizeSnapPlan = buildResizeSnapPlan(node);
     document.body.classList.add('canvas-node-resize');
     window.onmousemove = onNodeResize;
     window.onmouseup = endDrag;
@@ -11478,8 +11753,22 @@ function startNodeResize(e, node){
 function onNodeResize(e){
     if(!resizeNode) return;
     const min = defaultNodeSize(resizeNode.node.type);
-    const nextW = Math.max(Math.min(min.w, 220), resizeNode.sw + (e.clientX - resizeNode.sx) / viewport.scale);
-    const nextH = Math.max(96, resizeNode.sh + (e.clientY - resizeNode.sy) / viewport.scale);
+    const minW = Math.min(min.w, 220);
+    let nextW = Math.max(minW, resizeNode.sw + (e.clientX - resizeNode.sx) / viewport.scale);
+    let nextH = Math.max(96, resizeNode.sh + (e.clientY - resizeNode.sy) / viewport.scale);
+    // Ctrl/⌘ 临时关闭吸附；规则与拖动一致，阈值是 7 个屏幕像素。
+    const snapDisabled = e.ctrlKey || e.metaKey;
+    if(resizeSnapPlan && !snapDisabled){
+        const snapped = resolveResizeSnap(resizeSnapPlan, resizeNode.left + nextW, resizeNode.top + nextH);
+        const snappedW = snapped.right - resizeNode.left;
+        const snappedH = snapped.bottom - resizeNode.top;
+        nextW = Math.max(minW, snappedW);
+        nextH = Math.max(96, snappedH);
+        // 如果命中目标比最小尺寸还小，尺寸会被夹住，此时不能再画一条“对不上”的线。
+        renderSnapGuides(nextW === snappedW ? snapped.guideX : null, nextH === snappedH ? snapped.guideY : null);
+    } else {
+        hideSnapGuides();
+    }
     resizeNode.node.w = Math.round(nextW);
     resizeNode.node.h = Math.round(nextH);
     const el = nodesEl.querySelector(`.node[data-id="${resizeNode.node.id}"]`);
@@ -11609,11 +11898,35 @@ function sanitizeConnections(){
 function endDrag(event=null){
     const hadContentDrag = Boolean(dragNode || resizeNode || llmPaneDrag || knifeChanged || tempLink);
     const hadViewportDrag = Boolean(dragBoard || minimapDrag);
+    dragSnapPlan = null;
+    resizeSnapPlan = null;
+    hideSnapGuides();
     if(dragNode){
         const moved = [dragNode.node, ...(dragNode.children || []).map(c => c.node)].filter(Boolean);
         // 拖动 group/promptGroup 自身时不重新评估（成员跟着一起走，包含关系不变）
         const draggedGroup = moved.some(n => n.type === 'group' || n.type === 'promptGroup');
-        if(!draggedGroup) updateGroupMembership(moved);
+        if(!draggedGroup){
+            // 归属可能没变，但子项可能被拖到框边/框外，父分组仍要重新贴合。
+            const parentGroups = new Set();
+            moved.forEach(node => {
+                nodes.forEach(group => {
+                    if(group.type === 'group' && (group.items || []).includes(node.id)) parentGroups.add(group);
+                });
+            });
+            updateGroupMembership(moved);
+            if(parentGroups.size){
+                parentGroups.forEach(group => fitGroupToItems(group));
+                render();
+            }
+        }
+    }
+    if(resizeNode){
+        // 子项缩放结束后让父分组重新贴合，避免子项被拉出分组边框。
+        const parent = nodes.find(g => g.type === 'group' && (g.items || []).includes(resizeNode.node.id));
+        if(parent){
+            fitGroupToItems(parent);
+            render();
+        }
     }
     dragNode = null;
     dragBoard = null;
@@ -11631,6 +11944,7 @@ function endDrag(event=null){
     window.onmousemove = null;
     window.onmouseup = null;
     if(shouldRenderKnife) render();
+    renderSelectionHub();
     scheduleMinimapRender();
     if(hadContentDrag) scheduleSave();
     else if(hadViewportDrag) scheduleViewportSave();
@@ -11640,6 +11954,120 @@ function nodeRect(n){
     const w = el?.offsetWidth || n.w || 260;
     const h = el?.offsetHeight || n.h || 200;
     return {x:n.x, y:n.y, w, h, cx:n.x + w/2, cy:n.y + h/2};
+}
+// ── 对齐参考线（第一版）────────────────────────────────────────
+// 规则与 DX OS 对齐：
+// 1. 吸附锚点只有 3 条 X（左/中/右）和 3 条 Y（上/中/下）；
+// 2. 阈值 7 个“屏幕像素”，按 viewport.scale 换算成世界单位；
+// 3. 每个轴只取最近的一条，命中后节点真的贴上去；
+// 4. 参考线画在屏幕层，位置 = 世界坐标 * scale + viewport 偏移。
+function snapRectOf(node){
+    const r = nodeRect(node);
+    return {x:r.x, y:r.y, w:r.w, h:r.h, right:r.x + r.w, bottom:r.y + r.h};
+}
+function buildSnapPlan(movingIds){
+    const movers = nodes.filter(n => movingIds.has(n.id));
+    if(!movers.length) return null;
+    const rects = movers.map(snapRectOf);
+    const box = {
+        left: Math.min(...rects.map(r => r.x)),
+        top: Math.min(...rects.map(r => r.y)),
+        right: Math.max(...rects.map(r => r.right)),
+        bottom: Math.max(...rects.map(r => r.bottom))
+    };
+    const xs = [];
+    const ys = [];
+    nodes.forEach(n => {
+        if(movingIds.has(n.id)) return;
+        const r = snapRectOf(n);
+        if(!r.w || !r.h) return;
+        xs.push(r.x, r.x + r.w / 2, r.right);
+        ys.push(r.y, r.y + r.h / 2, r.bottom);
+    });
+    return {
+        box,
+        xs: [...new Set(xs)],
+        ys: [...new Set(ys)],
+        threshold: SNAP_PX / (viewport.scale || 1)
+    };
+}
+function resolveSnap(plan, dx, dy){
+    if(!plan) return {dx, dy, guideX:null, guideY:null};
+    const b = plan.box;
+    const movingX = [b.left + dx, (b.left + b.right) / 2 + dx, b.right + dx];
+    const movingY = [b.top + dy, (b.top + b.bottom) / 2 + dy, b.bottom + dy];
+    let bestX = null;
+    let bestY = null;
+    movingX.forEach(mx => {
+        plan.xs.forEach(tx => {
+            const delta = tx - mx;
+            const dist = Math.abs(delta);
+            if(dist <= plan.threshold && (!bestX || dist < bestX.dist)) bestX = {delta, guide:tx, dist};
+        });
+    });
+    movingY.forEach(my => {
+        plan.ys.forEach(ty => {
+            const delta = ty - my;
+            const dist = Math.abs(delta);
+            if(dist <= plan.threshold && (!bestY || dist < bestY.dist)) bestY = {delta, guide:ty, dist};
+        });
+    });
+    return {
+        dx: dx + (bestX ? bestX.delta : 0),
+        dy: dy + (bestY ? bestY.delta : 0),
+        guideX: bestX ? bestX.guide : null,
+        guideY: bestY ? bestY.guide : null
+    };
+}
+function renderSnapGuides(guideX, guideY){
+    if(!snapGuidesEl || !snapGuideVEl || !snapGuideHEl) return;
+    const hasX = Number.isFinite(guideX);
+    const hasY = Number.isFinite(guideY);
+    snapGuidesEl.classList.toggle('on', hasX || hasY);
+    snapGuideVEl.classList.toggle('on', hasX);
+    if(hasX) snapGuideVEl.style.left = `${guideX * viewport.scale + viewport.x}px`;
+    snapGuideHEl.classList.toggle('on', hasY);
+    if(hasY) snapGuideHEl.style.top = `${guideY * viewport.scale + viewport.y}px`;
+}
+function hideSnapGuides(){
+    renderSnapGuides(null, null);
+}
+// 右下角缩放：左/上边固定，只让右边和下边去吸附其他节点的边/中心线。
+function buildResizeSnapPlan(node){
+    const xs = [];
+    const ys = [];
+    nodes.forEach(n => {
+        if(n.id === node.id) return;
+        const r = snapRectOf(n);
+        if(!r.w || !r.h) return;
+        xs.push(r.x, r.x + r.w / 2, r.right);
+        ys.push(r.y, r.y + r.h / 2, r.bottom);
+    });
+    return {
+        xs: [...new Set(xs)],
+        ys: [...new Set(ys)],
+        threshold: SNAP_PX / (viewport.scale || 1)
+    };
+}
+function closestSnapAnchor(anchors, value, threshold){
+    let best = null;
+    anchors.forEach(anchor => {
+        const delta = anchor - value;
+        const dist = Math.abs(delta);
+        if(dist <= threshold && (!best || dist < best.dist)) best = {delta, guide:anchor, dist};
+    });
+    return best;
+}
+function resolveResizeSnap(plan, right, bottom){
+    if(!plan) return {right, bottom, guideX:null, guideY:null};
+    const bx = closestSnapAnchor(plan.xs, right, plan.threshold);
+    const by = closestSnapAnchor(plan.ys, bottom, plan.threshold);
+    return {
+        right: right + (bx ? bx.delta : 0),
+        bottom: bottom + (by ? by.delta : 0),
+        guideX: bx ? bx.guide : null,
+        guideY: by ? by.guide : null
+    };
 }
 function connectedClusterIds(seedId){
     const ids = new Set(nodes.map(n => n.id));
@@ -11772,6 +12200,7 @@ function updateGroupMembership(movedNodes){
         {childType:'prompt', groupType:'promptGroup'}
     ];
     let changed = false;
+    const touchedGroups = new Set();
     const handoffGroupConnections = (group, child) => {
         if(!group || group.type !== 'group' || !['image','prompt'].includes(child?.type)) return;
         const directTargets = connections
@@ -11806,16 +12235,19 @@ function updateGroupMembership(movedNodes){
             groups.forEach(g => {
                 if(g === containing) return;
                 const idx = (g.items || []).indexOf(child.id);
-                if(idx >= 0){ g.items.splice(idx, 1); changed = true; }
+                if(idx >= 0){ g.items.splice(idx, 1); touchedGroups.add(g); changed = true; }
             });
             if(containing){
                 containing.items = containing.items || [];
                 if(!containing.items.includes(child.id)){ containing.items.push(child.id); changed = true; }
+                touchedGroups.add(containing);
                 handoffGroupConnections(containing, child);
             }
         });
     });
     if(changed){
+        // 归属变化后，旧分组和新分组都要重新贴合子项，避免边框留空或装不下。
+        touchedGroups.forEach(group => fitGroupToItems(group));
         syncGeneratorInputs();
         refreshGeneratorInputViews();
         render();
@@ -12113,6 +12545,9 @@ function startBoardPan(e, opts={}){
     if(isEditableTarget(e.target) || e.target.closest?.('#createMenu, #linkCreateMenu, #nodeInputMenu, #nodeOutputMenu, #imageNodeMenu, .minimap')) return false;
     e.preventDefault();
     e.stopPropagation();
+    dragSnapPlan = null;
+    resizeSnapPlan = null;
+    hideSnapGuides();
     closeCreateMenu();
     if(document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
     dragBoard = {sx:e.clientX, sy:e.clientY, ox:viewport.x, oy:viewport.y, moved:false, clearSelectionOnClick:Boolean(opts.clearSelectionOnClick)};
@@ -12357,6 +12792,7 @@ function deleteSelectedNodes(){
     connections = connections.filter(c => !toDelete.has(c.from) && !toDelete.has(c.to));
     selected.clear();
     render();
+    renderSelectionHub();
     scheduleSave();
 }
 function hasImageFiles(items){
