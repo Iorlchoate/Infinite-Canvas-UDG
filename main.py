@@ -19035,10 +19035,26 @@ if __name__ == "__main__":
             except OSError:
                 time.sleep(0.2)
         time.sleep(0.5)
+        url = f"http://127.0.0.1:{port}/"
+        opened = False
         try:
-            webbrowser.open(f"http://127.0.0.1:{port}/")
+            opened = bool(webbrowser.open(url))
         except Exception:
-            pass
+            opened = False
+        # 某些 Windows 机器没有注册 webbrowser 的默认浏览器，
+        # webbrowser.open 会静默返回 False；用系统文件关联再兜底一次。
+        if not opened:
+            try:
+                if os.name == "nt":
+                    os.startfile(url)  # type: ignore[attr-defined]
+                elif sys.platform == "darwin":
+                    import subprocess
+                    subprocess.Popen(["open", url])
+                else:
+                    import subprocess
+                    subprocess.Popen(["xdg-open", url])
+            except Exception:
+                pass
 
     threading.Thread(target=_open_browser_when_ready, daemon=True).start()
 
