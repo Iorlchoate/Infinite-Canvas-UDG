@@ -262,7 +262,7 @@ h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:it
       <div class="generate-meta">
         <small>当前模板 · 选好即可生成</small>
         <strong id="gen-template">—</strong>
-        <span>生成后进入画布，拖入底图与参考图即可运行</span>
+        <span>生成后进入画布，拖入底图即可运行；参考图按模板需要可选</span>
       </div>
       <input id="extra" placeholder="可选补充：项目类型、风格、光线时段、材质…">
       <button class="primary-btn" id="btn-go" type="button" title="用当前模板生成画布"><i data-lucide="zap" class="icon"></i><span>生成画布</span></button>
@@ -280,7 +280,7 @@ h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:it
             <span class="card-note">打开画布后拖入图片即可运行</span>
           </div>
           <div class="graph-wrap"><svg id="graph" height="0"></svg></div>
-          <div class="flow-tip"><b>① 底图</b> 与 <b>② 参考图</b> 是空白图片节点，拖入或双击上传；<b>提示词</b> 已写好并可在下方修改；运行 <b>API 出图</b> 节点即生成，结果汇入 <b>成果</b>。</div>
+          <div class="flow-tip"><b>① 底图</b> 是必需图片节点；<b>② 参考图</b> 按模板需要可选，SU 模板以底图为准。拖入或双击上传，运行 <b>API 出图</b> 节点即生成，结果汇入 <b>成果</b>。</div>
         </div>
 
         <div class="card">
@@ -290,7 +290,7 @@ h1{margin:0 0 10px;font-size:36px;line-height:1.15;font-weight:800;font-style:it
           </div>
           <textarea id="prompt" spellcheck="false"></textarea>
           <div class="prompt-foot">
-            <span>第一张图 = 结构底图，第二张图 = 风格参考，连线顺序已固定；提示词改动会自动保存到当前模板。</span>
+            <span>模板需要两张图时，第一张 = 结构底图，第二张 = 风格参考；SU 模板以第一张为准，参考图可留空。提示词改动会自动保存到当前模板。</span>
           </div>
         </div>
       </div>
