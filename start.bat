@@ -49,7 +49,12 @@ if defined LANIP if not "%LANIP%"=="127.0.0.1" echo Same Wi-Fi (phone/tablet): h
 echo Press Ctrl+C to stop.
 echo.
 
-REM Browser is opened automatically by main.py once the server is ready.
+REM Open the browser from a separate process, after the port accepts connections.
+REM This avoids relying on uvicorn's startup thread or the webbrowser controller.
+REM A dedicated Chrome/Edge profile guarantees a visible window instead of a
+REM background tab in the user's existing browser session.
+set "CANVAS_NO_BROWSER=1"
+start "" /b powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\open_browser.ps1" -Url "http://127.0.0.1:%PORT%/" -Profile "%~dp0data\browser-profile" >nul 2>&1
 "%PYEXE%" main.py
 
 echo.

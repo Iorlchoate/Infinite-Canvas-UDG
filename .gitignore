@@ -18,6 +18,7 @@ data/recommended_providers_seed.json
 data/runninghub_workflows.json
 data/shared_folders.json
 data/storage_settings.json
+data/browser-profile/
 global_config.json
 logs/
 output/

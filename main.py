@@ -19056,7 +19056,8 @@ if __name__ == "__main__":
             except Exception:
                 pass
 
-    threading.Thread(target=_open_browser_when_ready, daemon=True).start()
+    if not os.environ.get("CANVAS_NO_BROWSER"):
+        threading.Thread(target=_open_browser_when_ready, daemon=True).start()
 
     # 关闭服务端协议级 WebSocket ping：部分客户端（如 PS UXP 面板）不会自动回 pong，
     # 默认 20s ping/20s 超时会把这些连接每隔一会儿就踢掉造成"频繁断连"。
