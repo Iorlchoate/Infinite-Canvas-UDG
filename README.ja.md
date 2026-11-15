@@ -23,6 +23,8 @@
 <a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="ダウンロード" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
 <a href="#クイックスタート"><img alt="クイックスタート" src="https://img.shields.io/badge/QUICK%20START-3%20%E3%82%B9%E3%83%86%E3%83%83%E3%83%97-111827?style=flat-square"></a>
 
+<p><a href="https://gitcode.com/iorlchoate/Infinite-Canvas-UDG"><b>GitCode 中国ミラー</b></a></p>
+
 </div>
 
 ![無限キャンバス](docs/screenshots/canvas-overview.png)
@@ -108,6 +110,7 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 | ダウンロードとインストール | [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest) |
 | 更新ノート | [update-notes.json](https://github.com/Iorlchoate/Infinite-Canvas-UDG/blob/main/update-notes.json) |
 | 問題報告 | [GitHub Issues](https://github.com/Iorlchoate/Infinite-Canvas-UDG/issues) |
+| 中国ミラー | [GitCode](https://gitcode.com/iorlchoate/Infinite-Canvas-UDG) |
 | 上流プロジェクト | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>

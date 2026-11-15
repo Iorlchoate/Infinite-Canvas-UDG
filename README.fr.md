@@ -23,6 +23,8 @@ Sans installation · Fonctionne hors ligne · Vos données restent sur votre mac
 <a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Télécharger" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
 <a href="#démarrage-rapide"><img alt="Démarrage rapide" src="https://img.shields.io/badge/QUICK%20START-3%20%C3%A9tapes-111827?style=flat-square"></a>
 
+<p><a href="https://gitcode.com/iorlchoate/Infinite-Canvas-UDG"><b>Miroir GitCode (Chine)</b></a></p>
+
 </div>
 
 ![Toile infinie](docs/screenshots/canvas-overview.png)
@@ -108,6 +110,7 @@ L'application ne contacte que l'API que vous configurez, et uniquement lorsque v
 | Téléchargement | [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest) |
 | Notes de version | [update-notes.json](https://github.com/Iorlchoate/Infinite-Canvas-UDG/blob/main/update-notes.json) |
 | Signaler un problème | [GitHub Issues](https://github.com/Iorlchoate/Infinite-Canvas-UDG/issues) |
+| Miroir Chine | [GitCode](https://gitcode.com/iorlchoate/Infinite-Canvas-UDG) |
 | Projet amont | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>

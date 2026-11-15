@@ -23,6 +23,8 @@
 <a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="下载最新版" src="https://img.shields.io/badge/DOWNLOAD-Windows%20%E7%BB%BF%E8%89%B2%E5%8C%85-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
 <a href="#一分钟开始"><img alt="快速开始" src="https://img.shields.io/badge/QUICK%20START-3%20%E6%AD%A5%E5%BC%80%E5%A7%8B-111827?style=flat-square"></a>
 
+<p><a href="https://gitcode.com/iorlchoate/Infinite-Canvas-UDG"><b>GitCode 国内镜像</b></a></p>
+
 </div>
 
 ![无限画布](docs/screenshots/canvas-overview.png)
@@ -108,6 +110,7 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 | 下载与安装 | [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest) |
 | 更新说明 | [update-notes.json](https://github.com/Iorlchoate/Infinite-Canvas-UDG/blob/main/update-notes.json) |
 | 问题反馈 | [Issues](https://github.com/Iorlchoate/Infinite-Canvas-UDG/issues) |
+| 国内镜像 | [GitCode](https://gitcode.com/iorlchoate/Infinite-Canvas-UDG) |
 | 上游项目 | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>

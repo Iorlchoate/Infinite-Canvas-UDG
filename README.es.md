@@ -23,6 +23,8 @@ Sin instalación · Funciona sin conexión · Tus datos se quedan en tu equipo
 <a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Descargar" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
 <a href="#inicio-rápido"><img alt="Inicio rápido" src="https://img.shields.io/badge/QUICK%20START-3%20pasos-111827?style=flat-square"></a>
 
+<p><a href="https://gitcode.com/iorlchoate/Infinite-Canvas-UDG"><b>Espejo GitCode (China)</b></a></p>
+
 </div>
 
 ![Lienzo infinito](docs/screenshots/canvas-overview.png)
@@ -108,6 +110,7 @@ La aplicación solo contacta con la API que configures, y solo cuando llamas exp
 | Descarga e instalación | [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest) |
 | Notas de versión | [update-notes.json](https://github.com/Iorlchoate/Infinite-Canvas-UDG/blob/main/update-notes.json) |
 | Problemas | [GitHub Issues](https://github.com/Iorlchoate/Infinite-Canvas-UDG/issues) |
+| Espejo en China | [GitCode](https://gitcode.com/iorlchoate/Infinite-Canvas-UDG) |
 | Proyecto original | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>

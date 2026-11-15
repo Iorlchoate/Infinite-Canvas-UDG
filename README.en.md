@@ -23,6 +23,8 @@ No installation · Works offline · Data stays on your machine
 <a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Download" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
 <a href="#quick-start"><img alt="Quick start" src="https://img.shields.io/badge/QUICK%20START-3%20steps-111827?style=flat-square"></a>
 
+<p><a href="https://gitcode.com/iorlchoate/Infinite-Canvas-UDG"><b>GitCode mirror (China)</b></a></p>
+
 </div>
 
 ![Infinite Canvas](docs/screenshots/canvas-overview.png)
@@ -108,6 +110,7 @@ The app only talks to the API endpoint you configure, and only when you explicit
 | Download & install | [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest) |
 | Update notes | [update-notes.json](https://github.com/Iorlchoate/Infinite-Canvas-UDG/blob/main/update-notes.json) |
 | Issues | [GitHub Issues](https://github.com/Iorlchoate/Infinite-Canvas-UDG/issues) |
+| China mirror | [GitCode](https://gitcode.com/iorlchoate/Infinite-Canvas-UDG) |
 | Upstream | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>

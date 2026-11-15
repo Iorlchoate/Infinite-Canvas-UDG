@@ -23,6 +23,8 @@
 <a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="Скачать" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
 <a href="#быстрый-старт"><img alt="Быстрый старт" src="https://img.shields.io/badge/QUICK%20START-3%20%D1%88%D0%B0%D0%B3%D0%B0-111827?style=flat-square"></a>
 
+<p><a href="https://gitcode.com/iorlchoate/Infinite-Canvas-UDG"><b>Зеркало GitCode (Китай)</b></a></p>
+
 </div>
 
 ![Бесконечный холст](docs/screenshots/canvas-overview.png)
@@ -108,6 +110,7 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 | Скачивание и установка | [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest) |
 | Заметки о версиях | [update-notes.json](https://github.com/Iorlchoate/Infinite-Canvas-UDG/blob/main/update-notes.json) |
 | Проблемы | [GitHub Issues](https://github.com/Iorlchoate/Infinite-Canvas-UDG/issues) |
+| Зеркало в Китае | [GitCode](https://gitcode.com/iorlchoate/Infinite-Canvas-UDG) |
 | Исходный проект | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>

@@ -23,6 +23,8 @@
 <a href="https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest"><img alt="다운로드" src="https://img.shields.io/badge/DOWNLOAD-Windows%20zip-111827?style=flat-square&logo=windows&logoColor=white"></a>&nbsp;&nbsp;
 <a href="#빠른-시작"><img alt="빠른 시작" src="https://img.shields.io/badge/QUICK%20START-3%20%EB%8B%A8%EA%B3%84-111827?style=flat-square"></a>
 
+<p><a href="https://gitcode.com/iorlchoate/Infinite-Canvas-UDG"><b>GitCode 중국 미러</b></a></p>
+
 </div>
 
 ![무한 캔버스](docs/screenshots/canvas-overview.png)
@@ -108,6 +110,7 @@ Same Wi-Fi (phone/tablet): http://192.168.x.x:3000/
 | 다운로드 및 설치 | [Releases](https://github.com/Iorlchoate/Infinite-Canvas-UDG/releases/latest) |
 | 업데이트 노트 | [update-notes.json](https://github.com/Iorlchoate/Infinite-Canvas-UDG/blob/main/update-notes.json) |
 | 문제 제보 | [GitHub Issues](https://github.com/Iorlchoate/Infinite-Canvas-UDG/issues) |
+| 중국 미러 | [GitCode](https://gitcode.com/iorlchoate/Infinite-Canvas-UDG) |
 | 원본 프로젝트 | [hero8152/Infinite-Canvas](https://github.com/hero8152/Infinite-Canvas) |
 
 <details>
