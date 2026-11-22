@@ -137,20 +137,20 @@ const RECOMMENDED_APIS = [
         model_protocols:{}
     },
     {
-        id:'fhl',
-        name:'FHL',
+        id:'sillydream',
+        name:'SillyDream',
         category:'value',
-        base_url:'https://www.fhl.mom',
+        base_url:'https://want.sillydream.top',
         protocol:'openai',
-        // FHL 生图当前走 OpenAI Images 协议：文生图 /v1/images/generations，图生图 /v1/images/edits
+        // SillyDream 生图走 OpenAI Images 协议：文生图 /v1/images/generations，图生图 /v1/images/edits
         image_request_mode:'openai',
-        register_url:'https://www.fhl.mom/register?aff=G5D2ADX6NQQ7',
-        tagKeys:['Codex','Claude','api.tagGptImage2'],
-        icons:['CODEX','GPT','IMG'],
-        summaryKey:'api.recommendFhlSummary',
-        advantages:['稳定便宜接入 codex/Claude/GPT Image 2出图', 'OpenAI Images 生图直连', '预填 gpt-image-2 全系模型'],
-        image_models:['gpt-image-2', 'gpt-image-2-2k', 'gpt-image-2-4k', 'nano-banana'],
-        chat_models:['gpt-5.5'],
+        register_url:'https://want.sillydream.top/register',
+        tagKeys:['api.tagGptImage2','api.tagImageModels'],
+        icons:['GPT','IMG'],
+        summaryKey:'api.recommendSillydreamSummary',
+        advantages:['GPT Image 2 / 2.5 / 2.6 全系与 Gemini 3 图像模型', 'OpenAI Images 生图直连', '注册后控制台自助创建 API 密钥'],
+        image_models:['「1K」gpt-image-2', '「CS」gpt-image-2.5-flare', '「CS」gpt-image-2.5-sunburst', '「YQ」gpt-image-2.6-flare', '「YQ」gpt-image-2.6-sunburst', '「AB」gemini-3-pro-image-preview', '「AB」gemini-3.1-flash-image-preview'],
+        chat_models:[],
         video_models:[]
     },
     {
@@ -192,9 +192,9 @@ const RECOMMEND_GROUPS = [
     {key:'value', titleKey:'api.recommendGroupValue', icon:'badge-percent'},
     {key:'free', titleKey:'api.recommendGroupFree', icon:'gift'}
 ];
-// FHL 是锁定的推荐默认平台；当上游配置变化时，用户仍可把已保存的平台
+// SillyDream 是锁定的推荐默认平台；当上游配置变化时，用户仍可把已保存的平台
 // 切换到其他兼容协议。
-const LOCKED_RECOMMENDED_PROTOCOL_IDS = new Set(['fhl']);
+const LOCKED_RECOMMENDED_PROTOCOL_IDS = new Set(['sillydream']);
 function lockedRecommendedApi(itemOrId){
     const id = typeof itemOrId === 'string' ? itemOrId : itemOrId?.id;
     const name = typeof itemOrId === 'string' ? '' : itemOrId?.name;
@@ -670,7 +670,7 @@ async function saveRecommendedApi(index){
 // fit:'cover' 用于方形 App 图标（铺满圆角方块），fit:'contain' 用于横版字标（白底内留白）
 const BRAND_LOGOS = {
     fastai:{ key:'fastai', name:'Fast AI', initials:'FA', src:'/static/images/brands/fastai.png', fit:'cover' },
-    fhl:{ key:'fhl', name:'FHL', initials:'FHL', src:'/static/images/brands/fhl.png', fit:'cover' },
+    sillydream:{ key:'sillydream', name:'SillyDream', initials:'SD', src:'/static/images/brands/sillydream.png', fit:'cover' },
     'agnes-ai':{ key:'agnes-ai', name:'Agnes AI', initials:'AG', src:'/static/images/brands/agnes-ai.svg', fit:'contain', wide:true }
 };
 function brandLogoFor(item){

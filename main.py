@@ -229,9 +229,10 @@ ASSET_LIBRARY_PATH = os.path.join(DATA_DIR, "asset_library.json")
 PROMPT_LIBRARY_PATH = os.path.join(DATA_DIR, "prompt_libraries.json")
 API_PROVIDERS_FILE = os.path.join(DATA_DIR, "api_providers.json")
 RECOMMENDED_PROVIDERS_SEED_FILE = os.path.join(DATA_DIR, "recommended_providers_seed.json")
-RECOMMENDED_PROVIDERS_SEED_VERSION = 1
+RECOMMENDED_PROVIDERS_SEED_VERSION = 2
 FASTAI_DEFAULT_BASE_URL = "https://fast.youkeduo.xyz"
-FHL_DEFAULT_BASE_URL = "https://www.fhl.mom"
+SILLYDREAM_DEFAULT_BASE_URL = "https://want.sillydream.top"
+LEGACY_FHL_DEFAULT_BASE_URL = "https://www.fhl.mom"
 RUNNINGHUB_WORKFLOW_STORE_FILE = os.path.join(DATA_DIR, "runninghub_workflows.json")
 SHARED_FOLDERS_FILE = os.path.join(DATA_DIR, "shared_folders.json")
 GLOBAL_CONFIG_FILE = os.path.join(BASE_DIR, "global_config.json")
@@ -852,17 +853,25 @@ def default_recommended_providers():
             "model_protocols": {},
         },
         {
-            "id": "fhl",
-            "name": "FHL",
-            "base_url": FHL_DEFAULT_BASE_URL,
+            "id": "sillydream",
+            "name": "SillyDream",
+            "base_url": SILLYDREAM_DEFAULT_BASE_URL,
             "protocol": "openai",
             "image_request_mode": "openai",
             "image_generation_endpoint": "",
             "image_edit_endpoint": "",
             "enabled": True,
             "primary": False,
-            "image_models": ["gpt-image-2", "gpt-image-2-2k", "gpt-image-2-4k", "nano-banana"],
-            "chat_models": ["gpt-5.5"],
+            "image_models": [
+                "「1K」gpt-image-2",
+                "「CS」gpt-image-2.5-flare",
+                "「CS」gpt-image-2.5-sunburst",
+                "「YQ」gpt-image-2.6-flare",
+                "「YQ」gpt-image-2.6-sunburst",
+                "「AB」gemini-3-pro-image-preview",
+                "「AB」gemini-3.1-flash-image-preview",
+            ],
+            "chat_models": [],
             "video_models": [],
             "model_protocols": {},
         },
@@ -973,10 +982,16 @@ def merge_default_api_providers(providers, inject_missing=True):
         current["image_models"] = model_list_from_values([*image_models, *default_image_models])
         current["chat_models"] = model_list_from_values([*(current.get("chat_models") or []), *default_chat_models])
         current["video_models"] = []
-    # 推荐平台（Fast AI / FHL）：仅首次升级补入列表，用户主动删除后不再补回
+    # 推荐平台（Fast AI / SillyDream）：仅首次升级补入列表，用户主动删除后不再补回
     if os.path.exists(API_PROVIDERS_FILE) and recommended_providers_seed_pending():
         existing_ids = {str(item.get("id") or "").strip().lower() for item in merged}
         existing_names = {str(item.get("name") or "").strip().lower() for item in merged}
+        changed = False
+        # FHL 已由 SillyDream 取代：迁移时移除仍指向官方地址的 FHL 配置
+        legacy_removed = [item for item in merged if is_legacy_fhl_provider(item)]
+        if legacy_removed:
+            merged = [item for item in merged if not is_legacy_fhl_provider(item)]
+            changed = True
         added = []
         for rec in default_recommended_providers():
             if rec["id"] in existing_ids or rec["name"].lower() in existing_names:
@@ -984,6 +999,8 @@ def merge_default_api_providers(providers, inject_missing=True):
             added.append(dict(rec))
         if added:
             merged.extend(added)
+            changed = True
+        if changed:
             try:
                 with open(API_PROVIDERS_FILE, "w", encoding="utf-8") as f:
                     json.dump(merged, f, ensure_ascii=False, indent=2)
@@ -991,6 +1008,17 @@ def merge_default_api_providers(providers, inject_missing=True):
                 print(f"保存推荐平台失败: {e}")
         mark_recommended_providers_seeded()
     return merged
+
+
+def is_legacy_fhl_provider(item):
+    """识别旧的推荐平台 FHL（仅当 id 为 fhl 且仍指向官方地址时视为遗留配置）。"""
+    if not isinstance(item, dict):
+        return False
+    pid = str(item.get("id") or "").strip().lower()
+    if pid != "fhl":
+        return False
+    base = str(item.get("base_url") or "").strip().rstrip("/").lower()
+    return base == LEGACY_FHL_DEFAULT_BASE_URL
 
 def normalize_model_list(values):
     return model_list_from_values(values)
@@ -1247,9 +1275,9 @@ LOCKED_RECOMMENDED_PROVIDER_RULES = {
         "image_request_mode": "openai-video-proxy",
         "video_models": [],
     },
-    "fhl": {
-        "names": {"fhl"},
-        "base_urls": {"https://www.fhl.mom"},
+    "sillydream": {
+        "names": {"sillydream"},
+        "base_urls": {"https://want.sillydream.top", "https://wish.sillydream.top"},
         "protocol": "openai",
         "image_request_mode": "openai",
         "video_models": [],

@@ -128,7 +128,7 @@
         "api.recommendGroupAllround": { zh: "全能可靠", en: "Reliable All-in-one" },
         "api.recommendGroupValue": { zh: "性价比", en: "Value" },
         "api.recommendGroupFree": { zh: "免费", en: "Free" },
-        "api.recommendFhlSummary": { zh: "稳定便宜接入 codex/Claude/GPT Image 2出图。", en: "Stable and affordable access to codex/Claude/GPT Image 2 image generation." },
+        "api.recommendSillydreamSummary": { zh: "SillyDream 提供 GPT Image 2 / 2.5 / 2.6 与 Gemini 3 图像模型，OpenAI 兼容协议，注册后即可自助创建 API 密钥。", en: "SillyDream offers GPT Image 2 / 2.5 / 2.6 and Gemini 3 image models via an OpenAI-compatible API with self-service keys." },
         "api.recommendVipGptSummary": { zh: "支持 AI 编程的模型和生图模型，还可以包月使用。", en: "Supports AI coding models and image generation models, with monthly subscription options." },
         "api.recommendTudouSummary": { zh: "土豆 API 提供 LLM、图像和视频模型接入，并针对 Grok 图像与异步视频协议完成适配。", en: "Tudou API provides LLM, image, and video models with dedicated Grok image and async video support." },
         "api.recommendFastaiSummary": { zh: "Fast AI 提供 Codex / GPT 系列模型中转，OpenAI 兼容协议配置简单，控制台可自助创建 API 密钥。", en: "Fast AI relays Codex / GPT models with an OpenAI-compatible API, simple setup, and self-service API keys." },
