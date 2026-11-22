@@ -4,7 +4,7 @@
         "common.apiSettings": { zh: "API 设置", en: "API Settings" },
         "common.darkMode": { zh: "黑夜模式", en: "Dark Mode" },
         "common.lightMode": { zh: "白天模式", en: "Light Mode" },
-        "common.language": { zh: "中文", en: "English" },
+        "common.language": { zh: "English", en: "中文" },
         "common.cancel": { zh: "取消", en: "Cancel" },
         "common.confirm": { zh: "确定", en: "Confirm" },
         "common.save": { zh: "保存", en: "Save" },
